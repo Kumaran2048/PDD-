@@ -33,6 +33,18 @@ const alertSchema = new mongoose.Schema(
       enum: ["Low", "Medium", "High"],
       default: "Medium",
     },
+    allowReplies: {
+      type: Boolean,
+      default: false,
+    },
+    replies: [
+      {
+        farmerId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+        farmerName: String,
+        message: String,
+        createdAt: { type: Date, default: Date.now }
+      }
+    ]
   },
   { timestamps: true }
 );

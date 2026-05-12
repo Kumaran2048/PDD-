@@ -62,8 +62,16 @@ const selectActiveCrop = async (req, res) => {
 
     const profile = await FarmProfile.findOneAndUpdate(
       { userId: req.user._id },
-      { activeCrop: cropId },
-      { new: true }
+      { 
+        activeCrop: cropId,
+        $setOnInsert: {
+          district: req.user.district,
+          state: req.user.state || "N/A",
+          landSize: 1, // Default fallback
+          soilType: "Unknown" // Default fallback
+        }
+      },
+      { new: true, upsert: true }
     ).populate("activeCrop");
 
     res.json({ message: `Active crop set to ${crop.name}`, profile });

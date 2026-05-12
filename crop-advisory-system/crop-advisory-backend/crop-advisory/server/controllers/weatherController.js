@@ -14,11 +14,11 @@ const cropWaterNeeds = {
 const getCurrentWeather = async (req, res) => {
   try {
     const profile = await FarmProfile.findOne({ userId: req.user._id });
-    if (!profile) {
-      return res.status(400).json({ message: "Please set up your farm profile first" });
-    }
+    const district = profile ? profile.district : req.user.district;
 
-    const district = profile.district;
+    if (!district) {
+      return res.status(400).json({ message: "District not found for user" });
+    }
 
     // Try fetching from DB first (cached today's data)
     const today = new Date();
@@ -92,7 +92,7 @@ const generateWeatherImpactAnalysis = (weather) => {
 
 // Generate irrigation suggestion based on crop + weather
 const generateIrrigationAdvice = async (profile, weather) => {
-  if (!profile.activeCrop) {
+  if (!profile || !profile.activeCrop) {
     return "Select an active crop to get irrigation advice.";
   }
 
@@ -122,12 +122,14 @@ const generateIrrigationAdvice = async (profile, weather) => {
 const getWeatherForecast = async (req, res) => {
   try {
     const profile = await FarmProfile.findOne({ userId: req.user._id });
-    if (!profile) return res.status(400).json({ message: "Farm profile not found" });
+    const district = profile ? profile.district : req.user.district;
+    
+    if (!district) return res.status(400).json({ message: "District not found for user" });
 
     let forecast = [];
     try {
       const response = await axios.get(
-        `https://api.openweathermap.org/data/2.5/forecast?q=${profile.district},IN&appid=${process.env.OPENWEATHER_API_KEY}&units=metric`
+        `https://api.openweathermap.org/data/2.5/forecast?q=${district},IN&appid=${process.env.OPENWEATHER_API_KEY}&units=metric`
       );
 
       // Filter to get one forecast per day (closest to 12:00:00)
@@ -182,7 +184,7 @@ const getWeatherForecast = async (req, res) => {
       }
     }
 
-    res.json({ district: profile.district, forecast });
+    res.json({ district: district, forecast });
   } catch (error) {
     res.status(500).json({ message: "Failed to fetch forecast", error: error.message });
   }

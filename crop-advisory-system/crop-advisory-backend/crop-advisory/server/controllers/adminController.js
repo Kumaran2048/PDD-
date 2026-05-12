@@ -1,20 +1,21 @@
 const User = require("../models/User");
 const FarmProfile = require("../models/FarmProfile");
+const bcrypt = require("bcryptjs");
 
 // ── @GET /api/admin/users ──────────────────────────────────────────
 const getAllUsers = async (req, res) => {
     try {
-        // Fetch all users except passwords
-        const users = await User.find({}).select("-password");
+        const filter = {};
+        // If officer, only show users in their district
+        if (req.user.role === "officer") {
+            filter.district = req.user.district;
+        }
 
-        // Fetch all farm profiles to augment farmer data with crop/farm info (optional)
-        const profiles = await FarmProfile.find({});
-
-        // Map profiles by userId for quick lookup
+        const users = await User.find(filter).select("-password").sort({ createdAt: -1 });
+        const profiles = await FarmProfile.find({}).populate('activeCrop');
+        
         const profileMap = {};
-        profiles.forEach(p => {
-            profileMap[p.userId.toString()] = p;
-        });
+        profiles.forEach(p => { profileMap[p.userId.toString()] = p; });
 
         const enrichedUsers = users.map(user => {
             const pData = profileMap[user._id.toString()];
@@ -27,9 +28,10 @@ const getAllUsers = async (req, res) => {
                 district: user.district || (pData ? pData.district : "N/A"),
                 state: user.state || (pData ? pData.state : "N/A"),
                 isActive: user.isActive,
-                farmSize: pData ? pData.farmSize : null,
+                landSize: pData ? pData.landSize : null,
                 soilType: pData ? pData.soilType : null,
                 village: pData && pData.village ? pData.village : "N/A",
+                activeCrop: pData && pData.activeCrop ? pData.activeCrop.name : "None",
                 createdAt: user.createdAt
             };
         });
@@ -40,4 +42,45 @@ const getAllUsers = async (req, res) => {
     }
 };
 
-module.exports = { getAllUsers };
+// ── @POST /api/admin/users ──────────────────────────────────────────
+const addUser = async (req, res) => {
+  try {
+    const { name, email, password, role, district, state, phone } = req.body;
+    
+    const userExists = await User.findOne({ email });
+    if (userExists) return res.status(400).json({ message: "User already exists" });
+
+    const user = await User.create({
+      name, email, password, role, district, state, phone
+    });
+
+    res.status(201).json({ message: "User created successfully", user: { _id: user._id, name: user.name, role: user.role } });
+  } catch (error) {
+    res.status(500).json({ message: "Creation failed", error: error.message });
+  }
+};
+
+// ── @PATCH /api/admin/users/:id/status ────────────────────────────
+const updateUserStatus = async (req, res) => {
+  try {
+    const { isActive } = req.body;
+    const user = await User.findByIdAndUpdate(req.params.id, { isActive }, { new: true });
+    if (!user) return res.status(404).json({ message: "User not found" });
+    res.json({ message: "Status updated", isActive: user.isActive });
+  } catch (error) {
+    res.status(500).json({ message: "Update failed", error: error.message });
+  }
+};
+
+// ── @DELETE /api/admin/users/:id ──────────────────────────────────
+const deleteUser = async (req, res) => {
+  try {
+    const user = await User.findByIdAndDelete(req.params.id);
+    if (!user) return res.status(404).json({ message: "User not found" });
+    res.json({ message: "User deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Deletion failed", error: error.message });
+  }
+};
+
+module.exports = { getAllUsers, addUser, updateUserStatus, deleteUser };

@@ -1,8 +1,22 @@
-/* ── Modern Premium Design System ──────────────────────── */
+/* @import url() FONT IMPORTS MUST ALWAYS BE AT THE VERY TOP OF THIS FILE, ABOVE THE TAILWIND IMPORTS — DO NOT DELETE THIS COMMENT */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
 
+/* CRITICAL: THE FOLLOWING TAILWIND IMPORTS MUST NEVER BE DELETED OR REORDERED — DO NOT DELETE THIS COMMENT */
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+/* END TAILWIND IMPORTS — ALL OTHER CSS MUST GO BELOW THIS LINE */
+
 :root {
-  /* Color Palette - Nature Inspired */
+  --bg: #F5F3EE;
+  --surface: #FFFFFF;
+  --text: #1a1a1a;
+  --text-muted: #6b7280;
+  --border: #e5e7eb;
+
+  /* Old System Variables (Restored for Login UI) */
   --primary-dark: #1B3022;
   --primary: #2D4F39;
   --primary-light: #4A7C59;
@@ -11,99 +25,31 @@
   --white: #FFFFFF;
   --bg-cream: #F9FBF9;
   --text-main: #2D3436;
-  --text-muted: #636E72;
   --danger: #E17055;
   --success: #00B894;
   --warning: #FDCB6E;
-  
-  /* Shadows & Glassmorphism */
-  --shadow-sm: 0 4px 12px rgba(27, 48, 34, 0.05);
-  --shadow-md: 0 8px 24px rgba(27, 48, 34, 0.08);
-  --shadow-lg: 0 16px 40px rgba(27, 48, 34, 0.12);
-  --glass-bg: rgba(255, 255, 255, 0.85);
-  --glass-border: rgba(255, 255, 255, 0.4);
-  
-  /* Spacing & Radius */
-  --radius-xl: 2rem;
   --radius-lg: 1.5rem;
   --radius-md: 1rem;
-  --radius-sm: 0.75rem;
-  --container-max: 480px; /* Mobile first focus */
+  --shadow-sm: 0 4px 12px rgba(27, 48, 34, 0.05);
+  --shadow-md: 0 8px 24px rgba(27, 48, 34, 0.08);
+  --container-max: 480px;
 }
 
-/* ── Dark Mode Overrides ───────────────────────────── */
-[data-theme='dark'] {
-  --primary-dark: #A5D6A7;
-  --primary: #81C784;
-  --primary-light: #66BB6A;
-  --accent: #4CAF50;
-  --accent-soft: #1B3022;
-  --white: #121212;
-  --bg-cream: #1A1A1A;
-  --text-main: #E0E0E0;
-  --text-muted: #9E9E9E;
-  
-  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.6);
-  --glass-bg: rgba(30, 30, 30, 0.85);
-  --glass-border: rgba(255, 255, 255, 0.1);
-}
-
-/* ── Base Reset ────────────────────────────────────── */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent;
+.dark {
+  --bg: #0f1419;
+  --surface: #1a1f2e;
+  --text: #f5f3ee;
+  --text-muted: #9ca3af;
+  --border: #2a3142;
 }
 
 body {
-  font-family: 'Outfit', sans-serif;
-  background: #EDF1EE;
-  color: var(--text-main);
-  line-height: 1.5;
-  overflow-x: hidden;
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: 'Outfit', 'DM Sans', sans-serif;
 }
 
-/* ── Layout Containers ─────────────────────────────── */
-.app-container {
-  display: flex;
-  flex-direction: column;
-  max-width: var(--container-max);
-  margin: 0 auto;
-  height: 100vh;
-  position: relative;
-  background: var(--bg-cream);
-  box-shadow: 0 0 100px rgba(0,0,0,0.05);
-  overflow: hidden;
-}
-
-.main-content {
-  flex: 1;
-  overflow-y: auto;
-  padding-bottom: 2rem;
-}
-
-.fade-in {
-  animation: fadeIn 0.4s ease-out;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-/* ── Typography ─────────────────────────────────────── */
-h1, h2, h3, h4 {
-  font-weight: 700;
-  line-height: 1.2;
-}
-
-.text-muted { color: var(--text-muted); }
-.text-primary { color: var(--primary); }
-.text-center { text-align: center; }
-
-/* ── Premium Headers ────────────────────────────────── */
+/* Restored Login UI Classes */
 .premium-header {
   background: linear-gradient(135deg, var(--primary-dark), var(--primary));
   padding: 2.5rem 1.5rem;
@@ -127,124 +73,34 @@ h1, h2, h3, h4 {
   border-radius: 50%;
 }
 
-/* ── Components ────────────────────────────────────── */
-
-/* Glass Cards */
-.glass-card {
-  background: var(--white);
-  border: 1px solid rgba(0,0,0,0.03);
-  border-radius: var(--radius-lg);
-  padding: 1.5rem;
-  box-shadow: var(--shadow-sm);
-  margin-bottom: 1rem;
-}
-
-/* Dashboard Stat Cards */
-.stat-card {
-  background: var(--white);
-  border-radius: var(--radius-md);
-  padding: 1.25rem;
-  box-shadow: var(--shadow-sm);
+.role-tabs {
   display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  border: 1px solid rgba(0,0,0,0.02);
+  background: #F2F5F3;
+  padding: 0.35rem;
+  border-radius: 14px;
+  margin-bottom: 2rem;
 }
 
-.stat-value {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--primary-dark);
-}
-
-.stat-label {
-  font-size: 0.85rem;
-  color: var(--text-muted);
-  font-weight: 500;
-}
-
-/* Action Chips */
-.action-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
-}
-
-.action-card {
-  background: var(--white);
-  border: 1px solid rgba(0,0,0,0.04);
-  border-radius: var(--radius-md);
-  padding: 1.25rem 1rem;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.75rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.02);
-}
-
-.action-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-md);
-}
-
-.action-card:active {
-  transform: scale(0.96);
-  background: #F8FAF8;
-}
-
-.action-icon {
-  width: 54px;
-  height: 54px;
-  background: #F2F7F2;
-  border-radius: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.6rem;
-  color: var(--primary);
-}
-
-/* ── Buttons ────────────────────────────────────────── */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.85rem 1.5rem;
-  border-radius: var(--radius-md);
+.role-tab {
+  flex: 1;
+  padding: 0.65rem;
+  border-radius: 10px;
   font-weight: 600;
-  font-family: inherit;
+  font-size: 0.85rem;
   cursor: pointer;
+  text-align: center;
   transition: all 0.2s ease;
   border: none;
-  gap: 0.5rem;
-  width: 100%;
+  background: none;
+  color: var(--text-muted);
 }
 
-.btn-primary {
-  background: var(--primary-dark);
-  color: var(--white);
-  box-shadow: 0 8px 16px rgba(27, 48, 34, 0.15);
-}
-
-.btn-primary:active {
-  transform: scale(0.98);
-}
-
-.btn-secondary {
-  background: var(--accent-soft);
-  color: var(--primary-dark);
-}
-
-.btn-outline {
+.role-tab.active {
   background: var(--white);
-  border: 1.5px solid #E3E8E3;
   color: var(--primary-dark);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
 
-/* ── Forms ─────────────────────────────────────────── */
 .form-group {
   margin-bottom: 1.25rem;
 }
@@ -275,95 +131,27 @@ h1, h2, h3, h4 {
   background: var(--white);
 }
 
-/* ── Bottom Navigation ─────────────────────────────── */
-.bottom-nav {
-  position: relative;
-  width: 100%;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  display: flex;
-  justify-content: space-around;
-  padding: 0.85rem 1rem;
-  padding-bottom: calc(0.85rem + env(safe-area-inset-bottom, 0px));
-  border-top: 1px solid rgba(0,0,0,0.05);
-  box-shadow: 0 -4px 20px rgba(0,0,0,0.04);
-  z-index: 1000;
-  flex-shrink: 0;
-}
-
-.nav-item {
-  display: flex;
-  flex-direction: column;
+.btn {
+  display: inline-flex;
   align-items: center;
-  gap: 0.25rem;
-  color: #A0AEC0;
-  text-decoration: none;
-  font-size: 0.7rem;
+  justify-content: center;
+  padding: 0.85rem 1.5rem;
+  border-radius: var(--radius-md);
   font-weight: 600;
-  transition: all 0.2s ease;
+  font-family: inherit;
   cursor: pointer;
-  border: none;
-  background: none;
-}
-
-.nav-item.active {
-  color: var(--primary);
-}
-
-.nav-icon {
-  font-size: 1.4rem;
-}
-
-/* ── Role Tags & Badges ────────────────────────────── */
-.role-badge {
-  padding: 4px 10px;
-  border-radius: 100px;
-  font-size: 0.7rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-/* ── Auth/Login Specific ──────────────────────────── */
-.role-tabs {
-  display: flex;
-  background: #F2F5F3;
-  padding: 0.35rem;
-  border-radius: 14px;
-  margin-bottom: 2rem;
-}
-
-.role-tab {
-  flex: 1;
-  padding: 0.65rem;
-  border-radius: 10px;
-  font-weight: 600;
-  font-size: 0.85rem;
-  cursor: pointer;
-  text-align: center;
   transition: all 0.2s ease;
   border: none;
-  background: none;
-  color: var(--text-muted);
+  gap: 0.5rem;
+  width: 100%;
 }
 
-.role-tab.active {
-  background: var(--white);
-  color: var(--primary-dark);
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+.btn-primary {
+  background: var(--primary-dark);
+  color: var(--white);
+  box-shadow: 0 8px 16px rgba(27, 48, 34, 0.15);
 }
 
-/* ── Animations ────────────────────────────────────── */
-@keyframes slideUp {
-  from { transform: translateY(20px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-
-.animate-up {
-  animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-/* ── Alerts ────────────────────────────────────────── */
 .alert-banner {
   border-radius: var(--radius-md);
   padding: 1rem;
@@ -381,49 +169,11 @@ h1, h2, h3, h4 {
   box-shadow: 0 0 0 4px rgba(225, 112, 85, 0.15);
 }
 
-/* ── Responsive Utilities ──────────────────────────── */
-@media (min-width: 481px) {
-  body {
-    background: #E8F0EA;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    padding: 2rem 0;
-  }
-  
-  .app-container {
-    width: 400px;
-    height: 850px;
-    margin: 0;
-    border-radius: 40px;
-    border: 8px solid #111;
-    box-shadow: 0 30px 60px rgba(0,0,0,0.15), inset 0 0 0 4px #000;
-    background: var(--bg-cream);
-    position: relative;
-    overflow-x: hidden;
-    overflow-y: auto;
-  }
-
-  .main-content {
-    padding: 0;
-    padding-bottom: 2rem;
-  }
-
-  .bottom-nav {
-    border-radius: 0 0 32px 32px;
-  }
+/* Hide scrollbar for clean UI but keep functionality */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
-
-/* ── Custom Scrollbar ──────────────────────────────── */
-::-webkit-scrollbar {
-  width: 4px;
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: rgba(0,0,0,0.05);
-  border-radius: 10px;
-}
-

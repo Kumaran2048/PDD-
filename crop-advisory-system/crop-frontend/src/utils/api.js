@@ -2,6 +2,7 @@ import axios from 'axios'
 
 const API = axios.create({
   baseURL: '/api',
+  timeout: 10000,
 })
 
 // Auto attach JWT token to every request
@@ -18,7 +19,10 @@ API.interceptors.response.use(
     if (err.response?.status === 401) {
       localStorage.removeItem('token')
       localStorage.removeItem('user')
-      window.location.href = '/login'
+      // Only redirect if not already on login page
+      if (!window.location.pathname.includes('/login')) {
+        window.location.href = '/login'
+      }
     }
     return Promise.reject(err)
   }

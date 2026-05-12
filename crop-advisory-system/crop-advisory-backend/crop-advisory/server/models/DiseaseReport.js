@@ -37,6 +37,11 @@ const diseaseReportSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    status: {
+      type: String,
+      enum: ["pending", "resolved"],
+      default: "pending",
+    },
   },
   { timestamps: true }
 );

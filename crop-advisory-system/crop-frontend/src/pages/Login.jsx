@@ -1,14 +1,22 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
+import { useAuth } from '../contexts/AuthContext'
+
 
 const Login = () => {
-  const { login } = useAuth()
+  const { login, user } = useAuth()
   const navigate   = useNavigate()
   const [form, setForm]     = useState({ email: 'farmer@demo.com', password: 'password' })
   const [role, setRole]     = useState('farmer') 
   const [error, setError]   = useState('')
   const [loading, setLoading] = useState(false)
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user) {
+      navigate(`/${user.role}`);
+    }
+  }, [user, navigate]);
 
   const handle = (e) => setForm({ ...form, [e.target.name]: e.target.value })
 

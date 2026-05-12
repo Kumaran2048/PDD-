@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const morgan = require("morgan");
 const dotenv = require("dotenv");
 const connectDB = require("./config/db");
 
@@ -12,6 +13,7 @@ connectDB();
 const app = express();
 
 // ── Middleware ──────────────────────────────────────
+app.use(morgan("dev"));
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -29,6 +31,7 @@ app.use("/api/admin", require("./routes/adminRoutes"));
 app.use("/api/tasks", require("./routes/taskRoutes"));
 app.use("/api/schemes", require("./routes/schemeRoutes"));
 app.use("/api/insights", require("./routes/insightRoutes"));
+app.use("/api/ml", require("./routes/mlRoutes"));
 
 // ── Health Check ────────────────────────────────────
 app.get("/", (req, res) => {

@@ -64,6 +64,7 @@ const register = async (req, res) => {
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
+    console.log(`Login attempt for: ${email}`);
 
     // Validate input
     if (!email || !password) {
@@ -73,6 +74,7 @@ const login = async (req, res) => {
     // Find user
     const user = await User.findOne({ email });
     if (!user) {
+      console.log(`User not found: ${email}`);
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
@@ -84,8 +86,11 @@ const login = async (req, res) => {
     // Compare password
     const isMatch = await user.matchPassword(password);
     if (!isMatch) {
+      console.log(`Password mismatch for: ${email}`);
       return res.status(401).json({ message: "Invalid email or password" });
     }
+
+    console.log(`Login successful for: ${email}`);
 
     // Return user data + token
     res.json({
