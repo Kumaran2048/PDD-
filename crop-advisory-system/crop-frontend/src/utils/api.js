@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const API = axios.create({
-  baseURL: 'https://pdd-1-paz9.onrender.com/api',
+  baseURL: import.meta.env.VITE_API_URL || 'https://pdd-1-paz9.onrender.com/api',
   timeout: 10000,
 })
 
