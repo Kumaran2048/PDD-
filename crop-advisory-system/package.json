@@ -7,8 +7,8 @@
         "dev:frontend": "npm run dev --prefix crop-frontend",
         "dev:backend": "npm run dev --prefix crop-advisory-backend/crop-advisory/server",
         "dev:ml": "cd crop-advisory-backend/crop-advisory/ml-service && python app.py",
-        "start": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
-        "start:all": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\" \"npm run dev:ml\""
+        "build": "npm install && npm run install:all",
+        "start": "concurrently \"npm start --prefix crop-advisory-backend/crop-advisory/server\" \"npm run dev --prefix crop-frontend -- --host 0.0.0.0\""
     },
     "devDependencies": {
         "concurrently": "^8.2.2"
