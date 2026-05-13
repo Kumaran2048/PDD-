@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const API = axios.create({
-  baseURL: '/api',
+  baseURL: 'https://pdd-1-paz9.onrender.com/api',
   timeout: 10000,
 })
 
