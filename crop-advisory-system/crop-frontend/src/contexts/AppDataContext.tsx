@@ -101,9 +101,10 @@ export const AppDataProvider: React.FC<{
     }
   };
 
-  const refreshPrices = async () => {
+  const refreshPrices = async (stateFilter?: string) => {
     try {
-      const stateParam = user?.state ? `?state=${encodeURIComponent(user.state)}` : '';
+      const activeState = stateFilter !== undefined ? stateFilter : (user?.state || '');
+      const stateParam = activeState ? `?state=${encodeURIComponent(activeState)}` : '';
       const { data } = await API.get(`/market/all-crops${stateParam}`);
       setPrices(data.prices || []);
       

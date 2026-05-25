@@ -11,12 +11,15 @@ import { Card } from '../../components/ui/Card';
 import { Input } from '../../components/ui/Input';
 import { useAppData } from '../../contexts/AppDataContext';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { useAuth } from '../../contexts/AuthContext';
 
 import API from '../../utils/api';
 
 export const MarketPrices: React.FC = () => {
-  const { prices } = useAppData();
+  const { user } = useAuth();
+  const { prices, refreshPrices } = useAppData();
   const { t } = useLanguage();
+  const [selectedState, setSelectedState] = useState(user?.state || 'Maharashtra');
   const [search, setSearch] = useState('');
   const [historyData, setHistoryData] = useState<any[]>([]);
   const [selectedCrop, setSelectedCrop] = useState<any | null>(null);
@@ -58,14 +61,32 @@ export const MarketPrices: React.FC = () => {
             Live prices from state-authorized mandis · Updated 10m ago
           </p>
         </div>
-        <div className="w-full md:w-80">
-          <Input
-            placeholder="Search crop or mandi..."
-            icon={<SearchIcon size={18} />}
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="shadow-sm"
-          />
+        <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
+          {/* State Filter Dropdown */}
+          <div className="w-full sm:w-48">
+            <select
+              value={selectedState}
+              onChange={async (e) => {
+                const val = e.target.value;
+                setSelectedState(val);
+                await refreshPrices(val === 'All States' ? '' : val);
+              }}
+              className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-xl p-3 text-[var(--text)] focus:ring-2 focus:ring-farmer/50 outline-none transition-all appearance-none shadow-sm font-medium cursor-pointer"
+            >
+              {['All States', 'Maharashtra', 'Punjab', 'Uttar Pradesh', 'Gujarat', 'Tamil Nadu', 'Karnataka', 'Andhra Pradesh', 'West Bengal'].map(st => (
+                <option key={st} value={st}>{st}</option>
+              ))}
+            </select>
+          </div>
+          <div className="w-full sm:w-72">
+            <Input
+              placeholder="Search crop or mandi..."
+              icon={<SearchIcon size={18} />}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="shadow-sm"
+            />
+          </div>
         </div>
       </div>
 
