@@ -305,7 +305,7 @@ export const CropAdvice: React.FC = () => {
                     </div>
 
                     <button 
-                      onClick={() => handleConfirmCrop(topRecommendedCrop.crop.id || topRecommendedCrop.crop._id)}
+                      onClick={() => handleConfirmCrop(topRecommendedCrop.crop.id || topRecommendedCrop.crop._id || topRecommendedCrop.crop.name)}
                       className="w-full bg-farmer text-white font-black py-4 rounded-2xl hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-farmer/20"
                     >
                       Confirm & Set as Active Crop
