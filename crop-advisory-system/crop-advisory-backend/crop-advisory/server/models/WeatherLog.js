@@ -1,46 +1,52 @@
-const mongoose = require("mongoose");
+const { DataTypes } = require("sequelize");
+const sequelize = require("../config/sequelize");
+const { MongooseCompatModel } = require("../utils/mongooseCompat");
 
-const weatherLogSchema = new mongoose.Schema(
+class WeatherLog extends MongooseCompatModel {}
+
+WeatherLog.init(
   {
+    _id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
+    },
     district: {
-      type: String,
-      required: true,
-      trim: true,
+      type: DataTypes.STRING,
+      allowNull: false
     },
     state: {
-      type: String,
-      trim: true,
+      type: DataTypes.STRING
     },
     temperature: {
-      type: Number, // in Celsius
+      type: DataTypes.DOUBLE
     },
     humidity: {
-      type: Number, // percentage
+      type: DataTypes.DOUBLE
     },
     rainfall: {
-      type: Number, // mm
+      type: DataTypes.DOUBLE
     },
     windSpeed: {
-      type: Number,
+      type: DataTypes.DOUBLE
     },
     description: {
-      type: String, // e.g. "light rain", "clear sky"
+      type: DataTypes.STRING
     },
-    forecast: [
-      {
-        date: Date,
-        temp: Number,
-        humidity: Number,
-        rainfall: Number,
-        description: String,
-      },
-    ],
+    forecast: {
+      type: DataTypes.JSON
+    },
     date: {
-      type: Date,
-      default: Date.now,
-    },
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW
+    }
   },
-  { timestamps: true }
+  {
+    sequelize,
+    modelName: "WeatherLog",
+    tableName: "WeatherLogs",
+    timestamps: true
+  }
 );
 
-module.exports = mongoose.model("WeatherLog", weatherLogSchema);
+module.exports = WeatherLog;

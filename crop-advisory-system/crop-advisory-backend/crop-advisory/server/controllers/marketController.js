@@ -162,42 +162,42 @@ const getAllCropPrices = async (req, res) => {
     await syncGlobalMarketPrices();
 
     const { state, district } = req.query;
-    let matchQuery = {};
-    
-    // If state is provided, we can filter or prioritize.
-    // For now, let's filter by state if the user wants local prices.
-    if (state) {
-      matchQuery.state = new RegExp(state, 'i');
-    }
+    const sequelize = require("../config/sequelize");
+    const { QueryTypes } = require("sequelize");
 
-    const uniqueLatestPrices = await MarketPrice.aggregate([
-      { $match: matchQuery },
-      { $sort: { date: -1 } },
-      {
-        $group: {
-          _id: { crop: "$cropName", mandi: "$mandiName" },
-          latestPrice: { $first: "$$ROOT" }
-        }
-      },
-      { $replaceRoot: { newRoot: "$latestPrice" } },
-      { $sort: { date: -1 } },
-      { $limit: 100 }
-    ]);
+    let queryStr = `
+      SELECT mp1.*
+      FROM MarketPrices mp1
+      INNER JOIN (
+        SELECT MAX(_id) AS max_id
+        FROM MarketPrices
+        ${state ? "WHERE state LIKE :state" : ""}
+        GROUP BY cropName, mandiName
+      ) mp2 ON mp1._id = mp2.max_id
+      ORDER BY mp1.date DESC
+      LIMIT 100
+    `;
+
+    const uniqueLatestPrices = await sequelize.query(queryStr, {
+      replacements: state ? { state: `%${state}%` } : {},
+      type: QueryTypes.SELECT
+    });
 
     // If no local data, fallback to national data
     if (uniqueLatestPrices.length === 0 && state) {
-      const nationalPrices = await MarketPrice.aggregate([
-        { $sort: { date: -1 } },
-        {
-          $group: {
-            _id: { crop: "$cropName", mandi: "$mandiName" },
-            latestPrice: { $first: "$$ROOT" }
-          }
-        },
-        { $replaceRoot: { newRoot: "$latestPrice" } },
-        { $sort: { date: -1 } },
-        { $limit: 100 }
-      ]);
+      const nationalPrices = await sequelize.query(`
+        SELECT mp1.*
+        FROM MarketPrices mp1
+        INNER JOIN (
+          SELECT MAX(_id) AS max_id
+          FROM MarketPrices
+          GROUP BY cropName, mandiName
+        ) mp2 ON mp1._id = mp2.max_id
+        ORDER BY mp1.date DESC
+        LIMIT 100
+      `, {
+        type: QueryTypes.SELECT
+      });
       return res.json({ success: true, prices: nationalPrices, local: false });
     }
 

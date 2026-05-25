@@ -1,49 +1,66 @@
-const mongoose = require("mongoose");
+const { DataTypes } = require("sequelize");
+const sequelize = require("../config/sequelize");
+const { MongooseCompatModel } = require("../utils/mongooseCompat");
 
-const diseaseReportSchema = new mongoose.Schema(
+class DiseaseReport extends MongooseCompatModel {
+  get cropId() {
+    if (this.cropIdDetails !== undefined) {
+      return this.cropIdDetails;
+    }
+    return this.getDataValue("cropId");
+  }
+}
+
+DiseaseReport.init(
   {
+    _id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
+    },
     farmerId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
+      type: DataTypes.INTEGER,
+      allowNull: false
     },
     cropId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Crop",
-      default: null,
+      type: DataTypes.INTEGER,
+      defaultValue: null
     },
     imageUrl: {
-      type: String,
+      type: DataTypes.STRING
     },
     disease: {
-      type: String,
-      required: true,
+      type: DataTypes.STRING,
+      allowNull: false
     },
     confidence: {
-      type: Number, // percentage eg. 92.5
+      type: DataTypes.FLOAT
     },
     severity: {
-      type: String,
-      enum: ["Low", "Medium", "High"],
-      default: "Medium",
+      type: DataTypes.ENUM("Low", "Medium", "High"),
+      defaultValue: "Medium"
     },
     treatment: {
-      type: String,
+      type: DataTypes.TEXT
     },
     district: {
-      type: String,
+      type: DataTypes.STRING
     },
     isAlertTriggered: {
-      type: Boolean,
-      default: false,
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
     },
     status: {
-      type: String,
-      enum: ["pending", "resolved"],
-      default: "pending",
-    },
+      type: DataTypes.ENUM("pending", "resolved"),
+      defaultValue: "pending"
+    }
   },
-  { timestamps: true }
+  {
+    sequelize,
+    modelName: "DiseaseReport",
+    tableName: "DiseaseReports",
+    timestamps: true
+  }
 );
 
-module.exports = mongoose.model("DiseaseReport", diseaseReportSchema);
+module.exports = DiseaseReport;

@@ -1,38 +1,48 @@
-const mongoose = require("mongoose");
+const { DataTypes } = require("sequelize");
+const sequelize = require("../config/sequelize");
+const { MongooseCompatModel } = require("../utils/mongooseCompat");
 
-const governmentSchemeSchema = new mongoose.Schema(
+class GovernmentScheme extends MongooseCompatModel {}
+
+GovernmentScheme.init(
   {
+    _id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
+    },
     title: {
-      type: String,
-      required: true,
-      trim: true,
+      type: DataTypes.STRING,
+      allowNull: false
     },
     state: {
-      type: String,
-      required: true,
-      trim: true,
+      type: DataTypes.STRING,
+      allowNull: false
     },
     description: {
-      type: String,
-      required: true,
+      type: DataTypes.TEXT,
+      allowNull: false
     },
     eligibility: {
-      landSizeMax: Number,
-      cropTypes: [String],
+      type: DataTypes.JSON
     },
     benefits: {
-      type: String,
+      type: DataTypes.TEXT
     },
     link: {
-      type: String,
+      type: DataTypes.STRING
     },
     category: {
-      type: String,
-      enum: ["Subsidy", "Insurance", "Fertilizer", "Water Management", "Other"],
-      default: "Other",
-    },
+      type: DataTypes.ENUM("Subsidy", "Insurance", "Fertilizer", "Water Management", "Other"),
+      defaultValue: "Other"
+    }
   },
-  { timestamps: true }
+  {
+    sequelize,
+    modelName: "GovernmentScheme",
+    tableName: "GovernmentSchemes",
+    timestamps: true
+  }
 );
 
-module.exports = mongoose.model("GovernmentScheme", governmentSchemeSchema);
+module.exports = GovernmentScheme;

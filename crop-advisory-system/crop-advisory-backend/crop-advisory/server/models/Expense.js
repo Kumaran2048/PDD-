@@ -1,36 +1,53 @@
-const mongoose = require("mongoose");
+const { DataTypes } = require("sequelize");
+const sequelize = require("../config/sequelize");
+const { MongooseCompatModel } = require("../utils/mongooseCompat");
 
-const expenseSchema = new mongoose.Schema(
+class Expense extends MongooseCompatModel {
+  get cropId() {
+    if (this.cropIdDetails !== undefined) {
+      return this.cropIdDetails;
+    }
+    return this.getDataValue("cropId");
+  }
+}
+
+Expense.init(
   {
+    _id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
+    },
     farmerId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
+      type: DataTypes.INTEGER,
+      allowNull: false
     },
     cropId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Crop",
-      default: null,
+      type: DataTypes.INTEGER,
+      defaultValue: null
     },
     type: {
-      type: String,
-      enum: ["Seeds", "Fertilizer", "Labour", "Irrigation", "Pesticide", "Equipment", "Other"],
-      required: true,
+      type: DataTypes.ENUM("Seeds", "Fertilizer", "Labour", "Irrigation", "Pesticide", "Equipment", "Other"),
+      allowNull: false
     },
     amount: {
-      type: Number,
-      required: true,
+      type: DataTypes.DOUBLE,
+      allowNull: false
     },
     description: {
-      type: String,
-      trim: true,
+      type: DataTypes.TEXT
     },
     date: {
-      type: Date,
-      default: Date.now,
-    },
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW
+    }
   },
-  { timestamps: true }
+  {
+    sequelize,
+    modelName: "Expense",
+    tableName: "Expenses",
+    timestamps: true
+  }
 );
 
-module.exports = mongoose.model("Expense", expenseSchema);
+module.exports = Expense;

@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const connectDB = require('../config/db');
 const bcrypt = require('bcryptjs');
 const dotenv = require('dotenv');
 const path = require('path');
@@ -50,8 +50,8 @@ const demoCrops = [
 
 const seedDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/crop_advisory');
-    console.log('MongoDB connected for seeding...');
+    await connectDB(true);
+    console.log('Database connected for seeding...');
 
     // Clear existing data
     await User.deleteMany({ email: { $in: demoUsers.map(u => u.email) } });

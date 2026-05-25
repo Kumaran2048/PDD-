@@ -1,39 +1,50 @@
-const mongoose = require("mongoose");
+const { DataTypes } = require("sequelize");
+const sequelize = require("../config/sequelize");
+const { MongooseCompatModel } = require("../utils/mongooseCompat");
 
-const dailyTaskSchema = new mongoose.Schema(
+class DailyTask extends MongooseCompatModel {}
+
+DailyTask.init(
   {
+    _id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
+    },
     userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
+      type: DataTypes.INTEGER,
+      allowNull: false
     },
     title: {
-      type: String,
-      required: true,
+      type: DataTypes.STRING,
+      allowNull: false
     },
     description: {
-      type: String,
+      type: DataTypes.TEXT
     },
     type: {
-      type: String,
-      enum: ["Irrigation", "Fertilizer", "Pesticide", "Harvesting", "Weather Precaution", "General"],
-      default: "General",
+      type: DataTypes.ENUM("Irrigation", "Fertilizer", "Pesticide", "Harvesting", "Weather Precaution", "General"),
+      defaultValue: "General"
     },
     date: {
-      type: Date,
-      required: true,
+      type: DataTypes.DATE,
+      allowNull: false
     },
     isCompleted: {
-      type: Boolean,
-      default: false,
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
     },
     priority: {
-      type: String,
-      enum: ["Low", "Medium", "High"],
-      default: "Medium",
+      type: DataTypes.ENUM("Low", "Medium", "High"),
+      defaultValue: "Medium"
     }
   },
-  { timestamps: true }
+  {
+    sequelize,
+    modelName: "DailyTask",
+    tableName: "DailyTasks",
+    timestamps: true
+  }
 );
 
-module.exports = mongoose.model("DailyTask", dailyTaskSchema);
+module.exports = DailyTask;

@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const connectDB = require('../config/db');
 const dotenv = require('dotenv');
 const path = require('path');
 
@@ -9,7 +9,7 @@ const FarmProfile = require('../models/FarmProfile');
 
 const checkDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/crop_advisory');
+    await connectDB();
     const farmer = await User.findOne({ email: 'farmer@demo.com' });
     if (!farmer) {
       console.log('Farmer not found');

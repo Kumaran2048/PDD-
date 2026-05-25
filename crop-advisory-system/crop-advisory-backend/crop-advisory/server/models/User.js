@@ -1,66 +1,71 @@
-const mongoose = require("mongoose");
+const { DataTypes } = require("sequelize");
+const sequelize = require("../config/sequelize");
+const { MongooseCompatModel } = require("../utils/mongooseCompat");
 const bcrypt = require("bcryptjs");
 
-const userSchema = new mongoose.Schema(
+class User extends MongooseCompatModel {}
+
+User.init(
   {
+    _id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
+    },
     name: {
-      type: String,
-      required: [true, "Name is required"],
-      trim: true,
+      type: DataTypes.STRING,
+      allowNull: false
     },
     email: {
-      type: String,
-      required: [true, "Email is required"],
-      unique: true,
-      lowercase: true,
-      trim: true,
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true
     },
     password: {
-      type: String,
-      required: [true, "Password is required"],
-      minlength: 6,
+      type: DataTypes.STRING,
+      allowNull: false
     },
     phone: {
-      type: String,
-      trim: true,
+      type: DataTypes.STRING
     },
     role: {
-      type: String,
-      enum: ["farmer", "officer", "admin"],
-      default: "farmer",
+      type: DataTypes.ENUM("farmer", "officer", "admin"),
+      defaultValue: "farmer"
     },
     district: {
-      type: String,
-      trim: true,
+      type: DataTypes.STRING
     },
     state: {
-      type: String,
-      trim: true,
+      type: DataTypes.STRING
     },
     isActive: {
-      type: Boolean,
-      default: true,
+      type: DataTypes.BOOLEAN,
+      defaultValue: true
     },
     preferredLanguage: {
-      type: String,
-      enum: ["English", "Tamil", "Kannada", "Telugu", "Malayalam", "Hindi"],
-      default: "English",
-    },
+      type: DataTypes.ENUM("English", "Tamil", "Kannada", "Telugu", "Malayalam", "Hindi"),
+      defaultValue: "English"
+    }
   },
-  { timestamps: true }
+  {
+    sequelize,
+    modelName: "User",
+    tableName: "Users",
+    timestamps: true
+  }
 );
 
 // Hash password before saving
-userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
-  const salt = await bcrypt.genSalt(10);
-  this.password = await bcrypt.hash(this.password, salt);
-  next();
+User.beforeSave(async (user) => {
+  if (user.changed("password")) {
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(user.password, salt);
+  }
 });
 
-// Compare entered password with hashed
-userSchema.methods.matchPassword = async function (enteredPassword) {
+// Compare password instance method
+User.prototype.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
-module.exports = mongoose.model("User", userSchema);
+module.exports = User;

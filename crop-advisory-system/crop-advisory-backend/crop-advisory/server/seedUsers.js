@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const connectDB = require("./config/db");
 const dotenv = require("dotenv");
 const User = require("./models/User");
 
@@ -6,8 +6,8 @@ dotenv.config();
 
 const seedUsers = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI);
-    console.log("MongoDB Connected for User Seeding...");
+    await connectDB();
+    console.log("Database Connected for User Seeding...");
 
     // Clear existing demo users to avoid conflicts
     await User.deleteMany({ email: { $in: ["farmer@demo.com", "officer@demo.com", "admin@demo.com"] } });

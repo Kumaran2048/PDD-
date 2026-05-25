@@ -1,73 +1,78 @@
-const mongoose = require("mongoose");
+const { DataTypes } = require("sequelize");
+const sequelize = require("../config/sequelize");
+const { MongooseCompatModel } = require("../utils/mongooseCompat");
 
-const cropSchema = new mongoose.Schema(
+class Crop extends MongooseCompatModel {}
+
+Crop.init(
   {
+    _id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
+    },
     name: {
-      type: String,
-      required: true,
-      trim: true,
+      type: DataTypes.STRING,
+      allowNull: false
     },
     localName: {
-      type: String, // name in regional language
-      trim: true,
+      type: DataTypes.STRING
     },
     season: {
-      type: [String],
-      enum: ["Kharif", "Rabi", "Zaid"],
-      required: true,
+      type: DataTypes.JSON,
+      allowNull: false
     },
     soilTypes: {
-      type: [String],
-      enum: ["Red Soil", "Black Soil", "Loamy Soil", "Sandy Soil", "Alluvial Soil", "Laterite Soil"],
-      required: true,
+      type: DataTypes.JSON,
+      allowNull: false
     },
     waterNeed: {
-      type: String,
-      enum: ["Low", "Medium", "High"],
-      required: true,
+      type: DataTypes.ENUM("Low", "Medium", "High"),
+      allowNull: false
     },
     waterRequirementMM: {
-      type: Number, // water in mm per season
+      type: DataTypes.INTEGER
     },
     growingDurationDays: {
-      type: Number, // how many days to harvest
+      type: DataTypes.INTEGER
     },
     expectedYieldPerAcre: {
-      type: String, // e.g. "20-25 quintals"
+      type: DataTypes.STRING
     },
     commonDiseases: {
-      type: [String],
+      type: DataTypes.JSON
     },
     states: {
-      type: [String], // states where this crop is common
+      type: DataTypes.JSON
     },
     description: {
-      type: String,
+      type: DataTypes.TEXT
     },
     imageUrl: {
-      type: String,
+      type: DataTypes.STRING
     },
-    // New Day-to-Day Guidance
-    maintenanceTips: [String],
-    fertilizerSchedule: [{
-      day: Number, // days after sowing
-      instruction: String,
-      fertilizerType: String
-    }],
+    maintenanceTips: {
+      type: DataTypes.JSON
+    },
+    fertilizerSchedule: {
+      type: DataTypes.JSON
+    },
     wateringSchedule: {
-      frequency: String, // e.g., "Daily", "Alternate Days"
-      instructions: String
+      type: DataTypes.JSON
     },
-    pestRisks: [{
-      name: String,
-      prevention: String
-    }],
+    pestRisks: {
+      type: DataTypes.JSON
+    },
     idealConditions: {
-      tempRange: String,
-      humidityRange: String
+      type: DataTypes.JSON
     }
   },
-  { timestamps: true }
+  {
+    sequelize,
+    modelName: "Crop",
+    tableName: "Crops",
+    timestamps: true
+  }
 );
 
-module.exports = mongoose.model("Crop", cropSchema);
+module.exports = Crop;

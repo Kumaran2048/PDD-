@@ -1,52 +1,58 @@
-const mongoose = require("mongoose");
+const { DataTypes } = require("sequelize");
+const sequelize = require("../config/sequelize");
+const { MongooseCompatModel } = require("../utils/mongooseCompat");
 
-const alertSchema = new mongoose.Schema(
+class Alert extends MongooseCompatModel {}
+
+Alert.init(
   {
+    _id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
+    },
     farmerId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      default: null,
+      type: DataTypes.INTEGER,
+      defaultValue: null
     },
     officerId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      default: null,
+      type: DataTypes.INTEGER,
+      defaultValue: null
     },
     type: {
-      type: String,
-      enum: ["Disease Outbreak", "Low Market Price", "Weather Warning", "General"],
-      required: true,
+      type: DataTypes.ENUM("Disease Outbreak", "Low Market Price", "Weather Warning", "General"),
+      allowNull: false
     },
     message: {
-      type: String,
-      required: true,
+      type: DataTypes.TEXT,
+      allowNull: false
     },
     district: {
-      type: String,
+      type: DataTypes.STRING
     },
     isRead: {
-      type: Boolean,
-      default: false,
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
     },
     severity: {
-      type: String,
-      enum: ["Low", "Medium", "High"],
-      default: "Medium",
+      type: DataTypes.ENUM("Low", "Medium", "High"),
+      defaultValue: "Medium"
     },
     allowReplies: {
-      type: Boolean,
-      default: false,
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
     },
-    replies: [
-      {
-        farmerId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-        farmerName: String,
-        message: String,
-        createdAt: { type: Date, default: Date.now }
-      }
-    ]
+    replies: {
+      type: DataTypes.JSON,
+      defaultValue: []
+    }
   },
-  { timestamps: true }
+  {
+    sequelize,
+    modelName: "Alert",
+    tableName: "Alerts",
+    timestamps: true
+  }
 );
 
-module.exports = mongoose.model("Alert", alertSchema);
+module.exports = Alert;

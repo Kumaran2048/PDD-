@@ -1,63 +1,76 @@
-const mongoose = require("mongoose");
+const { DataTypes } = require("sequelize");
+const sequelize = require("../config/sequelize");
+const { MongooseCompatModel } = require("../utils/mongooseCompat");
 
-const farmProfileSchema = new mongoose.Schema(
+class FarmProfile extends MongooseCompatModel {
+  get activeCrop() {
+    if (this.activeCropDetails !== undefined) {
+      return this.activeCropDetails;
+    }
+    return this.activeCropId;
+  }
+}
+
+FarmProfile.init(
   {
+    _id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
+    },
     userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-      unique: true,
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      unique: true
     },
     landSize: {
-      type: Number, // in acres
-      required: [true, "Land size is required"],
+      type: DataTypes.FLOAT,
+      allowNull: false
     },
     soilType: {
-      type: String,
-      enum: ["Red Soil", "Black Soil", "Loamy Soil", "Sandy Soil", "Alluvial Soil", "Laterite Soil"],
-      required: [true, "Soil type is required"],
+      type: DataTypes.ENUM("Red Soil", "Black Soil", "Loamy Soil", "Sandy Soil", "Alluvial Soil", "Laterite Soil"),
+      allowNull: false
     },
     waterSource: {
-      type: String,
-      enum: ["Well", "Canal", "Rain-fed", "Borewell", "River"],
-      required: [true, "Water source is required"],
+      type: DataTypes.ENUM("Well", "Canal", "Rain-fed", "Borewell", "River"),
+      allowNull: false
     },
     village: {
-      type: String,
-      trim: true,
+      type: DataTypes.STRING
     },
     district: {
-      type: String,
-      required: [true, "District is required"],
-      trim: true,
+      type: DataTypes.STRING,
+      allowNull: false
     },
     state: {
-      type: String,
-      required: [true, "State is required"],
-      trim: true,
+      type: DataTypes.STRING,
+      allowNull: false
     },
     latitude: {
-      type: Number,
+      type: DataTypes.DOUBLE
     },
     longitude: {
-      type: Number,
+      type: DataTypes.DOUBLE
     },
-    activeCrop: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Crop",
-      default: null,
+    activeCropId: {
+      type: DataTypes.INTEGER,
+      defaultValue: null
     },
     sowingDate: {
-      type: Date,
-      default: null,
+      type: DataTypes.DATE,
+      defaultValue: null
     },
     sowingSeason: {
-      type: String,
-      enum: ["Kharif", "Rabi", "Zaid", null],
-      default: null,
-    },
+      type: DataTypes.ENUM("Kharif", "Rabi", "Zaid"),
+      defaultValue: null
+    }
   },
-  { timestamps: true }
+  {
+    sequelize,
+    modelName: "FarmProfile",
+    tableName: "FarmProfiles",
+    timestamps: true
+  }
 );
 
-module.exports = mongoose.model("FarmProfile", farmProfileSchema);
+module.exports = FarmProfile;

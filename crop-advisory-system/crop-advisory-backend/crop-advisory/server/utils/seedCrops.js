@@ -1,7 +1,7 @@
 // Run this ONCE to populate crop database:
 // node utils/seedCrops.js
 
-const mongoose = require("mongoose");
+const connectDB = require("../config/db");
 const dotenv = require("dotenv");
 dotenv.config();
 
@@ -27,8 +27,8 @@ const crops = [
 
 const seedCrops = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI);
-    console.log("Connected to MongoDB");
+    await connectDB();
+    console.log("Connected to Database");
 
     await Crop.deleteMany({});
     console.log("Cleared existing crops");

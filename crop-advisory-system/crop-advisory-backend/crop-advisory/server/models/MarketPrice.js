@@ -1,40 +1,50 @@
-const mongoose = require("mongoose");
+const { DataTypes } = require("sequelize");
+const sequelize = require("../config/sequelize");
+const { MongooseCompatModel } = require("../utils/mongooseCompat");
 
-const marketPriceSchema = new mongoose.Schema(
+class MarketPrice extends MongooseCompatModel {}
+
+MarketPrice.init(
   {
+    _id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
+    },
     cropName: {
-      type: String,
-      required: true,
-      trim: true,
+      type: DataTypes.STRING,
+      allowNull: false
     },
     district: {
-      type: String,
-      required: true,
-      trim: true,
+      type: DataTypes.STRING,
+      allowNull: false
     },
     state: {
-      type: String,
-      trim: true,
+      type: DataTypes.STRING
     },
     mandiName: {
-      type: String,
-      trim: true,
+      type: DataTypes.STRING
     },
     minPrice: {
-      type: Number, // Rs per quintal
+      type: DataTypes.DOUBLE
     },
     maxPrice: {
-      type: Number,
+      type: DataTypes.DOUBLE
     },
     modalPrice: {
-      type: Number, // most common price
+      type: DataTypes.DOUBLE
     },
     date: {
-      type: Date,
-      default: Date.now,
-    },
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW
+    }
   },
-  { timestamps: true }
+  {
+    sequelize,
+    modelName: "MarketPrice",
+    tableName: "MarketPrices",
+    timestamps: true
+  }
 );
 
-module.exports = mongoose.model("MarketPrice", marketPriceSchema);
+module.exports = MarketPrice;

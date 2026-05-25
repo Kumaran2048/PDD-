@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const connectDB = require("./config/db");
 const dotenv = require("dotenv");
 const Crop = require("./models/Crop");
 const GovernmentScheme = require("./models/GovernmentScheme");
@@ -8,8 +8,8 @@ dotenv.config();
 
 const seedExtraData = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI);
-    console.log("MongoDB Connected for Seeding...");
+    await connectDB();
+    console.log("Database Connected for Seeding...");
 
     // 1. Update Crops with detailed guidance
     await Crop.updateMany({ name: "Tomato" }, {

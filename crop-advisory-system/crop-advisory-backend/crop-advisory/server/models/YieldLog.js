@@ -1,54 +1,74 @@
-const mongoose = require("mongoose");
+const { DataTypes } = require("sequelize");
+const sequelize = require("../config/sequelize");
+const { MongooseCompatModel } = require("../utils/mongooseCompat");
 
-const yieldLogSchema = new mongoose.Schema(
+class YieldLog extends MongooseCompatModel {
+  get cropId() {
+    if (this.cropIdDetails !== undefined) {
+      return this.cropIdDetails;
+    }
+    return this.getDataValue("cropId");
+  }
+}
+
+YieldLog.init(
   {
+    _id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
+    },
     farmerId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
+      type: DataTypes.INTEGER,
+      allowNull: false
     },
     cropId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Crop",
-      required: true,
+      type: DataTypes.INTEGER,
+      allowNull: false
     },
     season: {
-      type: String,
-      enum: ["Kharif", "Rabi", "Zaid"],
+      type: DataTypes.ENUM("Kharif", "Rabi", "Zaid")
     },
     year: {
-      type: Number,
+      type: DataTypes.INTEGER
     },
     quantityQuintals: {
-      type: Number, // harvest amount
-      required: true,
+      type: DataTypes.DOUBLE,
+      allowNull: false
     },
     sellingPricePerQuintal: {
-      type: Number,
-      required: true,
+      type: DataTypes.DOUBLE,
+      allowNull: false
     },
     totalRevenue: {
-      type: Number, // auto calculated
+      type: DataTypes.DOUBLE
     },
     totalExpenses: {
-      type: Number, // pulled from Expense collection
+      type: DataTypes.DOUBLE
     },
     netProfit: {
-      type: Number, // totalRevenue - totalExpenses
+      type: DataTypes.DOUBLE
     },
     notes: {
-      type: String,
-    },
+      type: DataTypes.TEXT
+    }
   },
-  { timestamps: true }
+  {
+    sequelize,
+    modelName: "YieldLog",
+    tableName: "YieldLogs",
+    timestamps: true
+  }
 );
 
-// Auto calculate revenue and profit before saving
-yieldLogSchema.pre("save", function (next) {
-  this.totalRevenue = this.quantityQuintals * this.sellingPricePerQuintal;
-  if (this.totalExpenses) {
-    this.netProfit = this.totalRevenue - this.totalExpenses;
+// Auto-calculate revenue and profit before saving
+YieldLog.beforeSave((yieldLog) => {
+  yieldLog.totalRevenue = yieldLog.quantityQuintals * yieldLog.sellingPricePerQuintal;
+  if (yieldLog.totalExpenses) {
+    yieldLog.netProfit = yieldLog.totalRevenue - yieldLog.totalExpenses;
+  } else {
+    yieldLog.netProfit = yieldLog.totalRevenue;
   }
-  next();
 });
-module.exports = mongoose.model("YieldLog", yieldLogSchema);
+
+module.exports = YieldLog;
