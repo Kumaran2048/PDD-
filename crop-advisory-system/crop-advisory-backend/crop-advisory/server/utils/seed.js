@@ -28,9 +28,9 @@ const demoUsers = [
     phone: '9876543210'
   },
   {
-    name: 'Admin User',
-    email: 'admin@demo.com',
-    password: 'password',
+    name: 'Admin Kumaran',
+    email: 'kumaran@gmail.com',
+    password: '123456',
     role: 'admin',
     district: 'N/A',
     state: 'Maharashtra',

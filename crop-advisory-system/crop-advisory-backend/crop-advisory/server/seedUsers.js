@@ -34,9 +34,9 @@ const seedUsers = async () => {
         preferredLanguage: "English"
       },
       {
-        name: "Admin Demo",
-        email: "admin@demo.com",
-        password: "password123",
+        name: "Admin Kumaran",
+        email: "kumaran@gmail.com",
+        password: "123456",
         phone: "9876543212",
         role: "admin",
         district: "Nashik",
