@@ -10,10 +10,15 @@ import {
   MoonIcon,
   SunIcon,
   GlobeIcon,
+  MenuIcon,
   UserIcon } from
 'lucide-react';
 
-export const Topbar: React.FC = () => {
+interface TopbarProps {
+  onMenuToggle?: () => void;
+}
+
+export const Topbar: React.FC<TopbarProps> = ({ onMenuToggle }) => {
   const { user } = useAuth();
   const { broadcasts, diseaseReports } = useAppData();
   const { language, setLanguage } = useLanguage();
@@ -29,7 +34,14 @@ export const Topbar: React.FC = () => {
   const alertsPath = user.role === 'farmer' ? '/farmer/alerts' : (user.role === 'officer' ? '/officer/reports' : '#');
 
   return (
-    <header className="h-[64px] bg-[var(--surface)] border-b border-[var(--border)] sticky top-0 z-10 flex items-center justify-between px-6 shadow-sm">
+    <header className="h-[64px] bg-[var(--surface)] border-b border-[var(--border)] sticky top-0 z-10 flex items-center justify-between px-6 shadow-sm gap-4">
+      <button 
+        onClick={onMenuToggle}
+        className="md:hidden p-1.5 text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+      >
+        <MenuIcon size={22} />
+      </button>
+      
       <div className="flex-1 max-w-md">
         <div className="relative">
           <SearchIcon

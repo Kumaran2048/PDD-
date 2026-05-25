@@ -24,7 +24,11 @@ import {
   ActivityIcon,
   PieChartIcon } from
 'lucide-react';
-export const Sidebar: React.FC = () => {
+interface SidebarProps {
+  onClose?: () => void;
+}
+
+export const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
   const { user } = useAuth();
   const { t } = useLanguage();
   if (!user) return null;
@@ -205,6 +209,7 @@ export const Sidebar: React.FC = () => {
           key={link.to}
           to={link.to}
           end={link.to === `/${user.role}`}
+          onClick={onClose}
           className={({ isActive }) =>
           `flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${isActive ? 'bg-white/20 font-medium' : 'hover:bg-white/10 opacity-80 hover:opacity-100'}`
           }>
