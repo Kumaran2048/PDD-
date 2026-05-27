@@ -89,7 +89,8 @@ const selectActiveCrop = async (req, res) => {
           district: req.user.district,
           state: req.user.state || "N/A",
           landSize: 1, // Default fallback
-          soilType: "Unknown" // Default fallback
+          soilType: "Loamy Soil", // Fixed ENUM fallback
+          waterSource: "Rain-fed" // Added required field
         }
       },
       { new: true, upsert: true }
