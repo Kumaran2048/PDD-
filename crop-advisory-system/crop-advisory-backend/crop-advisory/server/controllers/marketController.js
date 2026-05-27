@@ -15,27 +15,30 @@ const syncGlobalMarketPrices = async () => {
     const uniqueCrops = await MarketPrice.distinct("cropName");
     if (uniqueCrops.length < 5) {
       const diverseSeeds = [
-        { c: "Onion", m: "Lasalgaon", d: "Nashik", p: 2400 },
-        { c: "Potato", m: "Agra Mandi", d: "Agra", p: 1800 },
-        { c: "Wheat", m: "Khanna", d: "Ludhiana", p: 2275 },
-        { c: "Cotton", m: "Nagpur Mandi", d: "Nagpur", p: 7500 },
-        { c: "Garlic", m: "Mandsaur", d: "Mandsaur", p: 14500 },
-        { c: "Ginger", m: "Shimoga", d: "Shimoga", p: 9000 },
-        { c: "Chilli", m: "Guntur", d: "Guntur", p: 18500 },
-        { c: "Rice", m: "Karnal", d: "Karnal", p: 3800 },
-        { c: "Apple", m: "Srinagar", d: "Srinagar", p: 8500 },
-        { c: "Grapes", m: "Pimpalgaon", d: "Nashik", p: 5500 }
+        { c: "Onion", m: "Lasalgaon", d: "Nashik", p: 2400, s: "Maharashtra" },
+        { c: "Potato", m: "Agra Mandi", d: "Agra", p: 1800, s: "Uttar Pradesh" },
+        { c: "Wheat", m: "Khanna", d: "Ludhiana", p: 2275, s: "Punjab" },
+        { c: "Cotton", m: "Nagpur Mandi", d: "Nagpur", p: 7500, s: "Maharashtra" },
+        { c: "Garlic", m: "Mandsaur", d: "Mandsaur", p: 14500, s: "Madhya Pradesh" },
+        { c: "Ginger", m: "Shimoga", d: "Shimoga", p: 9000, s: "Karnataka" },
+        { c: "Chilli", m: "Guntur", d: "Guntur", p: 18500, s: "Andhra Pradesh" },
+        { c: "Rice", m: "Karnal", d: "Karnal", p: 3800, s: "Haryana" },
+        { c: "Apple", m: "Srinagar", d: "Srinagar", p: 8500, s: "Jammu and Kashmir" },
+        { c: "Grapes", m: "Pimpalgaon", d: "Nashik", p: 5500, s: "Maharashtra" },
+        { c: "Banana", m: "Trichy", d: "Tiruchirappalli", p: 1500, s: "Tamil Nadu" },
+        { c: "Coconut", m: "Pollachi", d: "Coimbatore", p: 3000, s: "Tamil Nadu" },
+        { c: "Turmeric", m: "Erode", d: "Erode", p: 7000, s: "Tamil Nadu" }
       ];
 
-      await Promise.all(diverseSeeds.map(s => 
+      await Promise.all(diverseSeeds.map(seed => 
         MarketPrice.findOneAndUpdate(
-          { mandiName: s.m, cropName: s.c },
+          { mandiName: seed.m, cropName: seed.c },
           {
-            state: "Maharashtra",
-            district: s.d,
-            minPrice: s.p - 300,
-            maxPrice: s.p + 300,
-            modalPrice: s.p,
+            state: seed.s,
+            district: seed.d,
+            minPrice: seed.p - 300,
+            maxPrice: seed.p + 300,
+            modalPrice: seed.p,
             date: new Date(),
             unit: "Quintal"
           },
