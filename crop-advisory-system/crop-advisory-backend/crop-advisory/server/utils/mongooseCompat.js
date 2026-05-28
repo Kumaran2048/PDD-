@@ -243,6 +243,19 @@ class MongooseQueryBuilder {
 }
 
 class MongooseCompatModel extends Model {
+  toJSON() {
+    const data = super.toJSON();
+    if (data.activeCropDetails !== undefined) {
+      data.activeCrop = data.activeCropDetails;
+      delete data.activeCropDetails;
+    }
+    if (data.cropIdDetails !== undefined) {
+      data.cropId = data.cropIdDetails;
+      delete data.cropIdDetails;
+    }
+    return data;
+  }
+
   static sequelizeFindOne(options) {
     return super.findOne(options);
   }
