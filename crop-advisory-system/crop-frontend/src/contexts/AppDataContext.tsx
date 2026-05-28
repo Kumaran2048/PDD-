@@ -9,8 +9,9 @@ import {
   Broadcast,
   Expense,
   FieldVisit,
-  MarketPriceData } from
- '../types';
+  MarketPriceData
+} from
+  '../types';
 import { useAuth } from './AuthContext';
 import { toast } from 'sonner';
 
@@ -107,7 +108,7 @@ export const AppDataProvider: React.FC<{
       const stateParam = activeState ? `?state=${encodeURIComponent(activeState)}` : '';
       const { data } = await API.get(`/market/all-crops${stateParam}`);
       setPrices(data.prices || []);
-      
+
       setCrops(prev => prev.map(crop => {
         const priceInfo = (data.prices || []).find((p: any) => p.cropName.toLowerCase().includes(crop.name.toLowerCase()));
         if (priceInfo) {

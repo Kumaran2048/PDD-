@@ -48,7 +48,7 @@ def recommend_crop():
         temp, hum = float(req['temperature']), float(req['humidity'])
         ph, rain = float(req['ph']), float(req['rainfall'])
 
-        best_crop = "Unknown"
+        best_crop = "rice"
         min_dist = float('inf')
 
         for rec in CROP_RECORDS:

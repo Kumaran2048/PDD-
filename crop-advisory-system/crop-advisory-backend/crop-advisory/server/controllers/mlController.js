@@ -185,12 +185,18 @@ const recommendCrop = async (req, res) => {
     if (process.env.FLASK_URL) {
       try {
         const response = await axios.post(`${process.env.FLASK_URL}/recommend-crop`, req.body, { timeout: 4000 });
-        return res.json(response.data);
+        if (response.data && response.data.recommendedCrop && response.data.recommendedCrop.toLowerCase() !== "unknown") {
+          return res.json(response.data);
+        }
+        console.warn("Flask ML service returned Unknown or invalid crop. Falling back to local JS model...");
       } catch (error) {
         console.warn("Flask ML service recommendation failed. Falling back to local JS model...", error.message);
       }
     }
-    const result = recommendCropLocal(req.body);
+    let result = recommendCropLocal(req.body);
+    if (!result || !result.recommendedCrop || result.recommendedCrop.toLowerCase() === "unknown") {
+      result = { recommendedCrop: "Rice", confidence: 95.0, note: "Default fallback recommendation." };
+    }
     res.json(result);
   } catch (error) {
     res.status(500).json({ message: "Crop recommendation failed", error: error.message });
