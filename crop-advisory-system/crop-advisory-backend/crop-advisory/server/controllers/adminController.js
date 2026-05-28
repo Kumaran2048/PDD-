@@ -1,5 +1,10 @@
 const User = require("../models/User");
 const FarmProfile = require("../models/FarmProfile");
+const Alert = require("../models/Alert");
+const DailyTask = require("../models/DailyTask");
+const DiseaseReport = require("../models/DiseaseReport");
+const Expense = require("../models/Expense");
+const YieldLog = require("../models/YieldLog");
 const bcrypt = require("bcryptjs");
 
 // ── @GET /api/admin/users ──────────────────────────────────────────
@@ -75,7 +80,18 @@ const updateUserStatus = async (req, res) => {
 // ── @DELETE /api/admin/users/:id ──────────────────────────────────
 const deleteUser = async (req, res) => {
   try {
-    const user = await User.findByIdAndDelete(req.params.id);
+    const userId = req.params.id;
+
+    // Clean up all related tables to avoid MySQL Foreign Key constraint violations (prevent 500 error)
+    await Alert.destroy({ where: { farmerId: userId } }).catch(() => {});
+    await Alert.destroy({ where: { officerId: userId } }).catch(() => {});
+    await DailyTask.destroy({ where: { userId } }).catch(() => {});
+    await FarmProfile.destroy({ where: { userId } }).catch(() => {});
+    await DiseaseReport.destroy({ where: { farmerId: userId } }).catch(() => {});
+    await Expense.destroy({ where: { farmerId: userId } }).catch(() => {});
+    await YieldLog.destroy({ where: { farmerId: userId } }).catch(() => {});
+
+    const user = await User.findByIdAndDelete(userId);
     if (!user) return res.status(404).json({ message: "User not found" });
     res.json({ message: "User deleted successfully" });
   } catch (error) {

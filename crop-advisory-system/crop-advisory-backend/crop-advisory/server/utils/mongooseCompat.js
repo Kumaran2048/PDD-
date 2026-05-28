@@ -287,13 +287,19 @@ class MongooseCompatModel extends Model {
     return new MongooseQueryBuilder(this, "findOneAndUpdate", { where }, update, options);
   }
 
-  static findByIdAndDelete(id) {
-    return this.destroy({ where: { _id: id } }).then(() => null);
+  static async findByIdAndDelete(id) {
+    const instance = await this.findByPk(id);
+    if (!instance) return null;
+    await instance.destroy();
+    return instance;
   }
 
-  static findOneAndDelete(query = {}) {
+  static async findOneAndDelete(query = {}) {
     const where = translateMongoQuery(query.where || query);
-    return this.destroy({ where }).then(() => null);
+    const instance = await this.sequelizeFindOne({ where });
+    if (!instance) return null;
+    await instance.destroy();
+    return instance;
   }
 
   static deleteMany(query = {}) {
