@@ -36,6 +36,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (err?.response?.status !== 404) {
           console.error('Failed to fetch farm profile:', err);
         }
+      }
     }
     return basicUser;
   };
