@@ -294,8 +294,10 @@ export const AppDataProvider: React.FC<{
     try {
       await API.put('/farm/select-crop', { cropId });
       await refreshUser();
+      await refreshCrops();
       toast.success('Active crop updated successfully');
     } catch (err) {
+      console.error('setActiveCrop error:', err);
       toast.error('Failed to update active crop');
     }
   };

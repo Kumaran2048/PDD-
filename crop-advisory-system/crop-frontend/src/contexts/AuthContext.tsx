@@ -31,9 +31,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             village: data.profile.village
           };
         }
-      } catch (err) {
-        console.log('No farm profile found yet.');
-      }
+      } catch (err: any) {
+        // 404 is expected for new farmers who haven't set up a profile
+        if (err?.response?.status !== 404) {
+          console.error('Failed to fetch farm profile:', err);
+        }
     }
     return basicUser;
   };

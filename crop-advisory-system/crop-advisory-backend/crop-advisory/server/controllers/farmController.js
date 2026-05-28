@@ -84,7 +84,7 @@ const selectActiveCrop = async (req, res) => {
     const profile = await FarmProfile.findOneAndUpdate(
       { userId: req.user._id },
       { 
-        activeCrop: crop._id,
+        activeCropId: crop._id,
         $setOnInsert: {
           district: req.user.district,
           state: req.user.state || "N/A",
