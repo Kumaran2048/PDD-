@@ -10,7 +10,7 @@ app = Flask(__name__)
 CORS(app)
 
 # ── Load CSV Data for Real-Time Lookup ──────────────────────────────────────────
-DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "..", "ml-backend")
+DATA_DIR = os.path.dirname(__file__)
 CROP_CSV = os.path.join(DATA_DIR, "Crop_recommendation.csv")
 FERT_CSV = os.path.join(DATA_DIR, "Fertilizer Prediction.csv")
 
