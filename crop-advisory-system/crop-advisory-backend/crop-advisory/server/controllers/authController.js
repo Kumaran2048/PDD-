@@ -211,18 +211,32 @@ const sendOTP = async (req, res) => {
     user.otpExpires = otpExpires;
     await user.save();
 
-    // Send via email & SMS
-    await sendRealTimeEmail(
-      user.email,
-      "CropAdvisor OTP Code",
-      `Your verification code is: ${otp}. It is valid for 5 minutes.`
-    );
-    if (user.phone) {
-      await sendRealTimeSMS(
-        user.phone,
-        `Your CropAdvisor verification OTP is: ${otp}. Valid for 5 minutes.`
-      );
-    }
+    // Send via email & SMS concurrently in the background (non-blocking)
+    const sendOTPTasks = async () => {
+      try {
+        const promises = [
+          sendRealTimeEmail(
+            user.email,
+            "CropAdvisor OTP Code",
+            `Your verification code is: ${otp}. It is valid for 5 minutes.`
+          )
+        ];
+        if (user.phone) {
+          promises.push(
+            sendRealTimeSMS(
+              user.phone,
+              `Your CropAdvisor verification OTP is: ${otp}. Valid for 5 minutes.`
+            )
+          );
+        }
+        await Promise.all(promises);
+      } catch (err) {
+        console.error("[OTP BACKGROUND SEND ERROR]", err);
+      }
+    };
+
+    // Trigger asynchronously
+    sendOTPTasks();
 
     res.json({ message: "OTP sent successfully to registered mobile and email", phone: user.phone });
   } catch (error) {
