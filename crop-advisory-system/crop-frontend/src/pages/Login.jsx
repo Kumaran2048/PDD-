@@ -39,7 +39,7 @@ const Login = () => {
 
   const handleSendOTP = async () => {
     if (!phoneOrEmail) {
-      setError('Please enter your registered mobile number or email');
+      setError('Please enter your registered mobile number');
       return;
     }
     setError('');
@@ -49,9 +49,9 @@ const Login = () => {
       await sendOTP(phoneOrEmail);
       setOtpSent(true);
       setCountdown(60);
-      setInfoMsg('Verification OTP code sent to your registered mobile and email.');
+      setInfoMsg('Verification OTP code sent to your registered mobile number.');
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to send OTP. Make sure the phone/email is registered.');
+      setError(err.response?.data?.message || 'Failed to send OTP. Make sure the mobile number is registered.');
     } finally {
       setLoading(false);
     }
@@ -61,6 +61,12 @@ const Login = () => {
     e.preventDefault()
     setError('')
     setInfoMsg('')
+    
+    if (loginMode === 'otp' && !otpSent) {
+      await handleSendOTP();
+      return;
+    }
+
     setLoading(true)
     try {
       let loggedUser;
@@ -265,46 +271,49 @@ const Login = () => {
           ) : (
             <>
               <div className="form-group" style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                <label className="form-label" style={{ fontSize: '0.75rem', fontWeight: 800, color: '#9ca3af', letterSpacing: '1px' }}>REGISTERED MOBILE OR EMAIL</label>
-                <div style={{ display: 'flex', gap: '0.5rem' }}>
-                  <input
-                    type="text"
-                    className="input-field"
-                    placeholder="e.g. 9876543210 or email"
-                    value={phoneOrEmail}
-                    onChange={(e) => setPhoneOrEmail(e.target.value)}
-                    required
-                    disabled={otpSent}
-                    style={{
-                      flex: 1,
-                      padding: '1rem',
-                      borderRadius: '12px',
-                      border: '1.5px solid #e5e7eb',
-                      fontSize: '0.9rem',
-                      fontWeight: 600,
-                      outline: 'none'
-                    }}
-                  />
-                  {!otpSent && (
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <label className="form-label" style={{ fontSize: '0.75rem', fontWeight: 800, color: '#9ca3af', letterSpacing: '1px' }}>REGISTERED MOBILE NUMBER</label>
+                  {otpSent && (
                     <button
                       type="button"
-                      onClick={handleSendOTP}
-                      disabled={loading}
+                      onClick={() => {
+                        setOtpSent(false);
+                        setOtp('');
+                        setError('');
+                        setInfoMsg('');
+                      }}
                       style={{
-                        padding: '0 1.2rem',
-                        borderRadius: '12px',
+                        background: 'none',
                         border: 'none',
-                        background: '#2d6a4f',
-                        color: '#fff',
-                        fontWeight: 700,
-                        fontSize: '0.85rem',
-                        cursor: 'pointer'
+                        color: '#2d6a4f',
+                        fontSize: '0.75rem',
+                        fontWeight: 800,
+                        cursor: 'pointer',
+                        padding: 0
                       }}
                     >
-                      Send OTP
+                      ✏️ Change Number
                     </button>
                   )}
                 </div>
+                <input
+                  type="text"
+                  className="input-field"
+                  placeholder="e.g. 9876543210"
+                  value={phoneOrEmail}
+                  onChange={(e) => setPhoneOrEmail(e.target.value.replace(/\D/g, ''))}
+                  required
+                  disabled={otpSent}
+                  style={{
+                    padding: '1rem',
+                    borderRadius: '12px',
+                    border: '1.5px solid #e5e7eb',
+                    fontSize: '0.9rem',
+                    fontWeight: 600,
+                    outline: 'none',
+                    background: otpSent ? '#f9fafb' : '#fff'
+                  }}
+                />
               </div>
 
               {otpSent && (
@@ -328,7 +337,7 @@ const Login = () => {
                       outline: 'none'
                     }}
                   />
-                  <div style={{ display: 'flex', justifyContent: 'spaceBetween', marginTop: '0.4rem', fontSize: '0.8rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '0.4rem', fontSize: '0.8rem' }}>
                     <span style={{ color: '#6b7280' }}>Didn't receive code?</span>
                     <button
                       type="button"
@@ -370,7 +379,7 @@ const Login = () => {
               transition: 'all 0.2s ease-in-out'
             }}
           >
-            {loading ? 'Processing...' : (loginMode === 'otp' && !otpSent ? 'Get OTP to Sign In' : 'Sign In Now →')}
+            {loading ? 'Processing...' : (loginMode === 'otp' ? (otpSent ? 'Confirm & Sign In →' : 'Send OTP Code') : 'Sign In Now →')}
           </button>
         </form>
 
