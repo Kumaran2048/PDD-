@@ -1,5 +1,6 @@
 const Alert = require("../models/Alert");
 const User = require("../models/User");
+const { sendRealTimeEmail, sendRealTimeSMS } = require("../utils/notificationService");
 
 // ── @GET /api/alert/my-alerts ────────────────────────────────────
 const getMyAlerts = async (req, res) => {
@@ -45,6 +46,21 @@ const createBroadcast = async (req, res) => {
     }));
 
     await Alert.insertMany(alerts);
+
+    // Send real-time email and SMS notifications to all matching farmers
+    farmers.forEach((farmer) => {
+      sendRealTimeEmail(
+        farmer.email,
+        `⚠️ New Advisory Broadcast: ${type || "General"} (${severity || "Medium"})`,
+        `Hello ${farmer.name},\n\nAn advisory broadcast has been sent by ${req.user.name} for your district (${district}):\n\n"${message}"\n\nPlease check the CropAdvisor platform for more details.`
+      );
+      if (farmer.phone) {
+        sendRealTimeSMS(
+          farmer.phone,
+          `Advisory from Officer ${req.user.name}: "${message.substring(0, 100)}..."`
+        );
+      }
+    });
 
     res.status(201).json({ 
       message: `Broadcast sent to ${farmers.length} farmers in ${district}`,
@@ -97,6 +113,23 @@ const replyToAlert = async (req, res) => {
     });
 
     await alert.save();
+
+    // Notify the officer in real-time about the reply
+    const officer = await User.findById(alert.officerId);
+    if (officer) {
+      sendRealTimeEmail(
+        officer.email,
+        `💬 Reply received on broadcast alert`,
+        `Hello ${officer.name},\n\nFarmer ${req.user.name} has replied to your advisory broadcast:\n\n"${message}"`
+      );
+      if (officer.phone) {
+        sendRealTimeSMS(
+          officer.phone,
+          `Farmer ${req.user.name} replied to your advisory: "${message.substring(0, 100)}"`
+        );
+      }
+    }
+
     res.status(201).json({ message: "Reply sent successfully", alert });
   } catch (error) {
     res.status(500).json({ message: "Failed to reply", error: error.message });

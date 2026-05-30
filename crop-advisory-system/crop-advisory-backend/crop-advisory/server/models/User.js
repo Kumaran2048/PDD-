@@ -28,6 +28,12 @@ User.init(
     phone: {
       type: DataTypes.STRING
     },
+    otp: {
+      type: DataTypes.STRING
+    },
+    otpExpires: {
+      type: DataTypes.DATE
+    },
     role: {
       type: DataTypes.ENUM("farmer", "officer", "admin"),
       defaultValue: "farmer"

@@ -9,6 +9,8 @@ interface AuthContextType {
   logout: () => void;
   loading: boolean;
   refreshUser: () => Promise<void>;
+  sendOTP: (phoneOrEmail: string) => Promise<any>;
+  loginWithOTP: (phoneOrEmail: string, otp: string) => Promise<User>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -75,6 +77,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return fullUser;
   };
 
+  const sendOTP = async (phoneOrEmail: string): Promise<any> => {
+    const { data } = await API.post('/auth/send-otp', { phoneOrEmail });
+    return data;
+  };
+
+  const loginWithOTP = async (phoneOrEmail: string, otp: string): Promise<User> => {
+    const { data } = await API.post('/auth/login-otp', { phoneOrEmail, otp });
+    localStorage.setItem('token', data.token);
+    localStorage.setItem('user', JSON.stringify(data.user));
+    
+    const fullUser = await fetchProfile(data.user);
+    setUser(fullUser);
+    return fullUser;
+  };
+
   const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
@@ -89,7 +106,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, loading, refreshUser }}>
+    <AuthContext.Provider value={{ user, login, register, logout, loading, refreshUser, sendOTP, loginWithOTP }}>
       {children}
     </AuthContext.Provider>
   );

@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+const { sendRealTimeEmail, sendRealTimeSMS } = require("../utils/notificationService");
 
 // Generate JWT Token
 const generateToken = (id) => {
@@ -41,6 +42,19 @@ const register = async (req, res) => {
       state,
       preferredLanguage
     });
+
+    // Send real-time welcome notifications
+    sendRealTimeEmail(
+      user.email,
+      "Welcome to CropAdvisor!",
+      `Hello ${user.name},\n\nWelcome to CropAdvisor - Smart farming for every field! Your account as a ${user.role} has been created successfully.`
+    );
+    if (user.phone) {
+      sendRealTimeSMS(
+        user.phone,
+        `Hello ${user.name}, Welcome to CropAdvisor! Your registration as ${user.role} is successful.`
+      );
+    }
 
     // Return user data + token
     res.status(201).json({
@@ -157,4 +171,111 @@ const updateProfile = async (req, res) => {
   }
 };
 
-module.exports = { register, login, getMe, changePassword, updateProfile };
+// ── @POST /api/auth/send-otp ─────────────────────────────────────
+const sendOTP = async (req, res) => {
+  try {
+    const { phoneOrEmail } = req.body;
+    if (!phoneOrEmail) {
+      return res.status(400).json({ message: "Please provide registered phone number or email" });
+    }
+
+    // Find user by phone or email
+    const user = await User.findOne({
+      where: {
+        [require("sequelize").Op.or]: [
+          { phone: phoneOrEmail },
+          { email: phoneOrEmail }
+        ]
+      }
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "No registered account found with this phone number or email" });
+    }
+
+    if (!user.isActive) {
+      return res.status(401).json({ message: "Account is deactivated. Contact admin." });
+    }
+
+    // Generate 6-digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otpExpires = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes expiration
+
+    // Save to user
+    user.otp = otp;
+    user.otpExpires = otpExpires;
+    await user.save();
+
+    // Send via email & SMS
+    await sendRealTimeEmail(
+      user.email,
+      "CropAdvisor OTP Code",
+      `Your verification code is: ${otp}. It is valid for 5 minutes.`
+    );
+    if (user.phone) {
+      await sendRealTimeSMS(
+        user.phone,
+        `Your CropAdvisor verification OTP is: ${otp}. Valid for 5 minutes.`
+      );
+    }
+
+    res.json({ message: "OTP sent successfully to registered mobile and email", phone: user.phone });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to send OTP", error: error.message });
+  }
+};
+
+// ── @POST /api/auth/login-otp ────────────────────────────────────
+const loginOTP = async (req, res) => {
+  try {
+    const { phoneOrEmail, otp } = req.body;
+    if (!phoneOrEmail || !otp) {
+      return res.status(400).json({ message: "Please provide phone number/email and OTP" });
+    }
+
+    // Find user
+    const user = await User.findOne({
+      where: {
+        [require("sequelize").Op.or]: [
+          { phone: phoneOrEmail },
+          { email: phoneOrEmail }
+        ]
+      }
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (!user.isActive) {
+      return res.status(401).json({ message: "Account is deactivated. Contact admin." });
+    }
+
+    // Verify OTP
+    if (!user.otp || user.otp !== otp || new Date() > new Date(user.otpExpires)) {
+      return res.status(401).json({ message: "Invalid or expired OTP" });
+    }
+
+    // Clear OTP
+    user.otp = null;
+    user.otpExpires = null;
+    await user.save();
+
+    res.json({
+      message: "Login successful",
+      token: generateToken(user._id),
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        district: user.district,
+        state: user.state,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Login failed", error: error.message });
+  }
+};
+
+module.exports = { register, login, getMe, changePassword, updateProfile, sendOTP, loginOTP };
