@@ -16,6 +16,14 @@ export const ProfitPredict: React.FC = () => {
   const [landSize, setLandSize] = useState(farmer?.landSize?.toString() || '0');
   const [sellingPrice, setSellingPrice] = useState('');
   const [prediction, setPrediction] = useState<ProfitPrediction | null>(null);
+  
+  // Auto-select first crop when crops list loads
+  useEffect(() => {
+    if (crops.length > 0 && !selectedCropId) {
+      setSelectedCropId(crops[0].id);
+    }
+  }, [crops, selectedCropId]);
+
   const selectedCrop = crops.find((c) => c.id === selectedCropId);
   // Auto-update selling price when crop changes
   useEffect(() => {
