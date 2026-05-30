@@ -24,6 +24,7 @@ export const DiseaseScanner: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -114,12 +115,21 @@ export const DiseaseScanner: React.FC = () => {
                   className="hidden"
                 />
 
+                <input
+                  type="file"
+                  ref={cameraInputRef}
+                  onChange={handleFileChange}
+                  accept="image/*"
+                  capture="environment"
+                  className="hidden"
+                />
+
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
                   <Button onClick={() => fileInputRef.current?.click()} className="gap-2 px-8">
                     <Upload size={18} />
                     Choose File
                   </Button>
-                  <Button variant="outline" className="gap-2 px-8">
+                  <Button onClick={() => cameraInputRef.current?.click()} variant="outline" className="gap-2 px-8">
                     <Camera size={18} />
                     Open Camera
                   </Button>
