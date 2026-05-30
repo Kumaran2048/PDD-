@@ -35,7 +35,7 @@ const Login = () => {
     script.onload = () => {
       if (window.google) {
         window.google.accounts.id.initialize({
-          client_id: '921102434556-9g2l687h4qsq7eplq2j9d7k81k45b85a.apps.googleusercontent.com',
+          client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID || 'YOUR_GOOGLE_CLIENT_ID',
           callback: window.handleGoogleCredentialResponse,
         });
         window.google.accounts.id.renderButton(
