@@ -28,6 +28,13 @@ const register = async (req, res) => {
       return res.status(400).json({ message: "User already exists with this email" });
     }
 
+    if (phone) {
+      const existingPhone = await User.findOne({ phone });
+      if (existingPhone) {
+        return res.status(400).json({ message: "User already exists with this phone number" });
+      }
+    }
+
     // Determine preferred language based on state
     const preferredLanguage = LANGUAGE_MAP[state] || "English";
 

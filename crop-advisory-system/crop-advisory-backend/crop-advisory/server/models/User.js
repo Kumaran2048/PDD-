@@ -26,7 +26,8 @@ User.init(
       allowNull: false
     },
     phone: {
-      type: DataTypes.STRING
+      type: DataTypes.STRING,
+      unique: true
     },
     otp: {
       type: DataTypes.STRING
