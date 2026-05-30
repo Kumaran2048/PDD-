@@ -29,6 +29,10 @@ User.init(
       type: DataTypes.STRING,
       unique: true
     },
+    googleId: {
+      type: DataTypes.STRING,
+      unique: true
+    },
     otp: {
       type: DataTypes.STRING
     },

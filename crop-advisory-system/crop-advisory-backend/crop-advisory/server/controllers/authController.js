@@ -295,4 +295,70 @@ const loginOTP = async (req, res) => {
   }
 };
 
-module.exports = { register, login, getMe, changePassword, updateProfile, sendOTP, loginOTP };
+// ── @POST /api/auth/google-login ─────────────────────────────────
+const googleLogin = async (req, res) => {
+  try {
+    const { idToken } = req.body;
+    if (!idToken) {
+      return res.status(400).json({ message: "Please provide Google ID token" });
+    }
+
+    // Verify token with Google's API using native fetch
+    const response = await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${idToken}`);
+    if (!response.ok) {
+      return res.status(401).json({ message: "Invalid Google token" });
+    }
+
+    const payload = await response.json();
+    const { sub: googleId, email, name } = payload;
+
+    // Try to find the user by googleId
+    let user = await User.findOne({ googleId });
+
+    // If not found by googleId, try finding by email
+    if (!user) {
+      user = await User.findOne({ email });
+      if (user) {
+        // Link googleId to existing user
+        user.googleId = googleId;
+        await user.save();
+      }
+    }
+
+    // If still not found, auto-register as a farmer
+    if (!user) {
+      const randomPassword = Math.random().toString(36).slice(-10);
+      user = await User.create({
+        name: name || "Farmer",
+        email: email,
+        password: randomPassword,
+        googleId: googleId,
+        role: "farmer",
+        district: "Chennai", // Default valid district
+        state: "Tamil Nadu", // Default valid state
+        preferredLanguage: "English"
+      });
+    }
+
+    if (!user.isActive) {
+      return res.status(401).json({ message: "Account is deactivated. Contact admin." });
+    }
+
+    res.json({
+      message: "Google Login successful",
+      token: generateToken(user._id),
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        district: user.district,
+        state: user.state,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Google Login failed", error: error.message });
+  }
+};
+
+module.exports = { register, login, getMe, changePassword, updateProfile, sendOTP, loginOTP, googleLogin };

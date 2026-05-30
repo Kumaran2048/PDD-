@@ -3,11 +3,55 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 
 const Login = () => {
-  const { login, user, sendOTP, loginWithOTP } = useAuth()
+  const { login, user, sendOTP, loginWithOTP, loginWithGoogle } = useAuth()
   const navigate = useNavigate()
   
   const [form, setForm] = useState({ email: 'farmer@demo.com', password: 'password' })
   const [role, setRole] = useState('farmer') 
+  
+  // Load Google Identity Services dynamically
+  useEffect(() => {
+    if (role !== 'farmer') return;
+    
+    window.handleGoogleCredentialResponse = async (response) => {
+      setLoading(true);
+      setError('');
+      setInfoMsg('Signing in with Google...');
+      try {
+        const loggedUser = await loginWithGoogle(response.credential);
+        setInfoMsg('Successfully signed in with Google!');
+        navigate(`/${loggedUser.role}`);
+      } catch (err) {
+        setError(err.response?.data?.message || 'Google Sign-In failed.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const script = document.createElement('script');
+    script.src = 'https://accounts.google.com/gsi/client';
+    script.async = true;
+    script.defer = true;
+    script.onload = () => {
+      if (window.google) {
+        window.google.accounts.id.initialize({
+          client_id: '921102434556-9g2l687h4qsq7eplq2j9d7k81k45b85a.apps.googleusercontent.com',
+          callback: window.handleGoogleCredentialResponse,
+        });
+        window.google.accounts.id.renderButton(
+          document.getElementById('googleSignInBtn'),
+          { theme: 'outline', size: 'large', width: '100%' }
+        );
+      }
+    };
+    document.body.appendChild(script);
+
+    return () => {
+      if (document.body.contains(script)) {
+        document.body.removeChild(script);
+      }
+    };
+  }, [role]);
   const [error, setError] = useState('')
   const [infoMsg, setInfoMsg] = useState('')
   const [loading, setLoading] = useState(false)
@@ -382,6 +426,17 @@ const Login = () => {
             {loading ? 'Processing...' : (loginMode === 'otp' ? (otpSent ? 'Confirm & Sign In →' : 'Send OTP Code') : 'Sign In Now →')}
           </button>
         </form>
+
+        {role === 'farmer' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', marginTop: '1.2rem', alignItems: 'center' }}>
+            <div style={{ display: 'flex', alignItems: 'center', width: '100%', gap: '0.8rem' }}>
+              <div style={{ flex: 1, height: '1px', background: '#e5e7eb' }}></div>
+              <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#9ca3af', letterSpacing: '1px' }}>OR SIGN IN WITH</span>
+              <div style={{ flex: 1, height: '1px', background: '#e5e7eb' }}></div>
+            </div>
+            <div id="googleSignInBtn" style={{ width: '100%', minHeight: '44px' }}></div>
+          </div>
+        )}
 
         <p style={{ textAlign: 'center', marginTop: '2rem', fontSize: '0.85rem', color: '#6b7280', fontWeight: 600 }}>
           Don't have an account? <span onClick={() => navigate('/register')} style={{ color: '#2d6a4f', fontWeight: 800, cursor: 'pointer', textDecoration: 'underline' }}>Register</span>

@@ -11,6 +11,7 @@ interface AuthContextType {
   refreshUser: () => Promise<void>;
   sendOTP: (phoneOrEmail: string) => Promise<any>;
   loginWithOTP: (phoneOrEmail: string, otp: string) => Promise<User>;
+  loginWithGoogle: (idToken: string) => Promise<User>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -92,6 +93,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return fullUser;
   };
 
+  const loginWithGoogle = async (idToken: string): Promise<User> => {
+    const { data } = await API.post('/auth/google-login', { idToken });
+    localStorage.setItem('token', data.token);
+    localStorage.setItem('user', JSON.stringify(data.user));
+    
+    const fullUser = await fetchProfile(data.user);
+    setUser(fullUser);
+    return fullUser;
+  };
+
   const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
@@ -106,7 +117,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, loading, refreshUser, sendOTP, loginWithOTP }}>
+    <AuthContext.Provider value={{ user, login, register, logout, loading, refreshUser, sendOTP, loginWithOTP, loginWithGoogle }}>
       {children}
     </AuthContext.Provider>
   );
