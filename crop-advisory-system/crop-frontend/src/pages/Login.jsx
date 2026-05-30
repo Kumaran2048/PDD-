@@ -43,12 +43,12 @@ const Login = () => {
       return;
     }
     setError('');
-    setInfoMsg('');
+    setInfoMsg('Sending verification code to your mobile...');
+    setOtpSent(true);
+    setCountdown(60);
     setLoading(true);
     try {
       await sendOTP(phoneOrEmail);
-      setOtpSent(true);
-      setCountdown(60);
       setInfoMsg('Verification OTP code sent to your registered mobile number.');
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to send OTP. Make sure the mobile number is registered.');
