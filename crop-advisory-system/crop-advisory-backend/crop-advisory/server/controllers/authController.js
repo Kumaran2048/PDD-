@@ -186,14 +186,12 @@ const sendOTP = async (req, res) => {
       return res.status(400).json({ message: "Please provide registered phone number or email" });
     }
 
-    // Find user by phone or email
+    // Find user by phone or email (MongooseCompat translation handles $or cleanly)
     const user = await User.findOne({
-      where: {
-        [require("sequelize").Op.or]: [
-          { phone: phoneOrEmail },
-          { email: phoneOrEmail }
-        ]
-      }
+      $or: [
+        { phone: phoneOrEmail },
+        { email: phoneOrEmail }
+      ]
     });
 
     if (!user) {
@@ -240,14 +238,12 @@ const loginOTP = async (req, res) => {
       return res.status(400).json({ message: "Please provide phone number/email and OTP" });
     }
 
-    // Find user
+    // Find user by phone or email (MongooseCompat translation handles $or cleanly)
     const user = await User.findOne({
-      where: {
-        [require("sequelize").Op.or]: [
-          { phone: phoneOrEmail },
-          { email: phoneOrEmail }
-        ]
-      }
+      $or: [
+        { phone: phoneOrEmail },
+        { email: phoneOrEmail }
+      ]
     });
 
     if (!user) {
