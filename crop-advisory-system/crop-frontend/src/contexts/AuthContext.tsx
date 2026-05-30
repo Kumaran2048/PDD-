@@ -12,6 +12,7 @@ interface AuthContextType {
   sendOTP: (phoneOrEmail: string) => Promise<any>;
   loginWithOTP: (phoneOrEmail: string, otp: string) => Promise<User>;
   loginWithGoogle: (idToken: string) => Promise<User>;
+  updateProfile: (profileData: { name: string; phone: string; landSize?: number; district?: string; state?: string }) => Promise<User>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -109,6 +110,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser(null);
   };
 
+  const updateProfile = async (profileData: { name: string; phone: string; landSize?: number; district?: string; state?: string }): Promise<User> => {
+    const { data } = await API.put('/auth/profile', { 
+      name: profileData.name, 
+      phone: profileData.phone,
+      district: profileData.district,
+      state: profileData.state
+    });
+    if (profileData.landSize !== undefined) {
+      await API.post('/farm/profile', { landSize: profileData.landSize });
+    }
+    localStorage.setItem('user', JSON.stringify(data.user));
+    const fullUser = await fetchProfile(data.user);
+    setUser(fullUser);
+    return fullUser;
+  };
+
   const refreshUser = async () => {
     if (user) {
       const fullUser = await fetchProfile(user);
@@ -117,7 +134,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, loading, refreshUser, sendOTP, loginWithOTP, loginWithGoogle }}>
+    <AuthContext.Provider value={{ user, login, register, logout, loading, refreshUser, sendOTP, loginWithOTP, loginWithGoogle, updateProfile }}>
       {children}
     </AuthContext.Provider>
   );

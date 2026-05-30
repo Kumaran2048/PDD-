@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useAppData } from '../../contexts/AppDataContext';
@@ -16,13 +16,128 @@ import {
   ChevronRight } from
 'lucide-react';
 import { predictProfit } from '../../utils/predictProfit';
+import { SUPPORTED_REGIONS } from '../../utils/constants';
+import { toast } from 'sonner';
 
 export const FarmerDashboard: React.FC = () => {
-  const { user } = useAuth();
+  const { user, updateProfile } = useAuth();
   const { crops, expenses } = useAppData();
   const { t } = useLanguage();
   const navigate = useNavigate();
   const farmer = user as Farmer;
+
+  // If farmer doesn't have a district or state set (e.g. newly signed up with Google), force them to select it!
+  const hasNoRegion = !farmer.district || !farmer.state;
+
+  const [stateVal, setStateVal] = useState('');
+  const [districtVal, setDistrictVal] = useState('');
+  const [landVal, setLandVal] = useState('1.0');
+  const [profileLoading, setProfileLoading] = useState(false);
+  const [profileError, setProfileError] = useState('');
+
+  const availableStates = Object.keys(SUPPORTED_REGIONS || {});
+  const availableDistricts = stateVal ? SUPPORTED_REGIONS[stateVal] : [];
+
+  const handleProfileComplete = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!stateVal || !districtVal) {
+      setProfileError('Please select both state and district');
+      return;
+    }
+    setProfileLoading(true);
+    setProfileError('');
+    try {
+      if (updateProfile) {
+        await updateProfile({
+          name: farmer.name,
+          phone: farmer.phone || '',
+          state: stateVal,
+          district: districtVal,
+          landSize: Number(landVal)
+        });
+        toast.success('Profile setup completed successfully!');
+      }
+    } catch (err: any) {
+      setProfileError(err.response?.data?.message || 'Failed to update profile');
+    } finally {
+      setProfileLoading(false);
+    }
+  };
+
+  if (hasNoRegion) {
+    return (
+      <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-md flex items-center justify-center p-4">
+        <div className="bg-white rounded-[32px] max-w-md w-full p-8 shadow-2xl space-y-6">
+          <div className="text-center">
+            <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">
+              🌱
+            </div>
+            <h2 className="text-2xl font-black text-gray-800 font-serif">Welcome, {farmer.name}!</h2>
+            <p className="text-sm text-gray-500 mt-2">
+              To provide accurate local crop advice, weather alerts, and market prices, please set up your farming location.
+            </p>
+          </div>
+
+          {profileError && (
+            <div className="bg-red-50 border border-red-100 p-4 rounded-2xl flex items-center gap-2">
+              <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+              <p className="text-red-600 text-xs font-bold">{profileError}</p>
+            </div>
+          )}
+
+          <form onSubmit={handleProfileComplete} className="space-y-4">
+            <div className="space-y-1">
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Select State</label>
+              <select
+                value={stateVal}
+                onChange={(e) => { setStateVal(e.target.value); setDistrictVal(''); }}
+                className="w-full bg-gray-50 border-none rounded-2xl py-4 px-4 text-sm font-bold focus:ring-2 focus:ring-farmer"
+                required
+              >
+                <option value="">Choose State...</option>
+                {availableStates.map(s => <option key={s} value={s}>{s}</option>)}
+              </select>
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Select District</label>
+              <select
+                value={districtVal}
+                onChange={(e) => setDistrictVal(e.target.value)}
+                disabled={!stateVal}
+                className="w-full bg-gray-50 border-none rounded-2xl py-4 px-4 text-sm font-bold focus:ring-2 focus:ring-farmer disabled:opacity-50"
+                required
+              >
+                <option value="">Choose District...</option>
+                {availableDistricts.map(d => <option key={d} value={d}>{d}</option>)}
+              </select>
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Land Size (Acres)</label>
+              <input
+                type="number"
+                step="0.1"
+                min="0.1"
+                value={landVal}
+                onChange={(e) => setLandVal(e.target.value)}
+                className="w-full bg-gray-50 border-none rounded-2xl py-4 px-4 text-sm font-bold focus:ring-2 focus:ring-farmer"
+                required
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={profileLoading}
+              className="w-full bg-farmer text-white py-4 rounded-2xl font-black uppercase tracking-widest shadow-xl hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 mt-6"
+            >
+              {profileLoading ? 'Setting Up...' : 'Start Farming! →'}
+            </button>
+          </form>
+        </div>
+      </div>
+    );
+  }
 
   const activeCropData = crops.find((c) => c.name === farmer.activeCrop);
   

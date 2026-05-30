@@ -165,10 +165,10 @@ const changePassword = async (req, res) => {
 // ── @PUT /api/auth/profile ──────────────────────────────────────
 const updateProfile = async (req, res) => {
   try {
-    const { name, phone } = req.body;
+    const { name, phone, district, state } = req.body;
     const user = await User.findByIdAndUpdate(
       req.user._id,
-      { name, phone },
+      { name, phone, district, state },
       { new: true, runValidators: true }
     ).select("-password");
 
@@ -334,8 +334,8 @@ const googleLogin = async (req, res) => {
         password: randomPassword,
         googleId: googleId,
         role: "farmer",
-        district: "Chennai", // Default valid district
-        state: "Tamil Nadu", // Default valid state
+        district: "", // Leave blank so farmer is prompted to select it
+        state: "",    // Leave blank so farmer is prompted to select it
         preferredLanguage: "English"
       });
     }

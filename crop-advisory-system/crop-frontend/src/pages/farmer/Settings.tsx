@@ -8,8 +8,7 @@ import { useAppData } from '../../contexts/AppDataContext';
 import { Farmer } from '../../types';
 import { toast } from 'sonner';
 export const Settings: React.FC = () => {
-  const { user } = useAuth();
-  const { updateFarmer } = useAppData();
+  const { user, updateProfile } = useAuth();
 
   if (!user) return null;
   const farmer = user as Farmer;
@@ -24,15 +23,18 @@ export const Settings: React.FC = () => {
     disease: true,
     officer: true
   });
-  const handleSaveProfile = (e: React.FormEvent) => {
+  const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
-    updateFarmer({
-      ...farmer,
-      name: formData.name,
-      phone: formData.phone,
-      landSize: Number(formData.landSize)
-    });
-    toast.success('Profile updated successfully');
+    try {
+      await updateProfile({
+        name: formData.name,
+        phone: formData.phone,
+        landSize: Number(formData.landSize)
+      });
+      toast.success('Profile updated successfully');
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Failed to update profile');
+    }
   };
   return (
     <div className="max-w-md mx-auto pb-20 space-y-6">
