@@ -75,14 +75,36 @@ export const CropAdvice: React.FC = () => {
 
       // 3. Call ML Service
       const res = await API.post('/ml/recommend-crop', payload);
-      const mlCropName = res.data.recommendedCrop;
+      const mlCropName = res.data.recommendedCrop || 'Rice';
 
-      // 4. Find the matching crop object in our database to get prices/etc
+      // 4. Fetch dynamic ML-based Fertilizer Prediction for this crop
+      let fertilizerName = 'NPK 12:32:16'; // Fallback
+      try {
+        const fertPayload = {
+          temperature: payload.temperature,
+          humidity: payload.humidity,
+          moisture: '35',
+          soilType: soilType.replace(' Soil', ''),
+          cropType: mlCropName,
+          n: payload.n,
+          p: payload.p,
+          k: payload.k
+        };
+        const fertRes = await API.post('/ml/predict-fertilizer', fertPayload);
+        if (fertRes.data && fertRes.data.recommendedFertilizer) {
+          fertilizerName = fertRes.data.recommendedFertilizer;
+        }
+      } catch (fErr) {
+        console.warn("Fertilizer prediction call failed in CropAdvice, using default", fErr);
+      }
+
+      // 5. Find the matching crop object in our database to get prices/etc
       const matchedCrop = crops.find(c => c.name.toLowerCase().includes(mlCropName.toLowerCase()));
       
       setTopRecommendedCrop({
         ...res.data,
-        crop: matchedCrop || { name: mlCropName, emoji: '🌿', avgYieldPerAcre: 2.5, currentPrice: 18000 }
+        crop: matchedCrop || { name: mlCropName, emoji: '🌿', avgYieldPerAcre: 2.5, currentPrice: 18000 },
+        fertilizer: fertilizerName
       });
 
       setStep('results');
@@ -276,7 +298,7 @@ export const CropAdvice: React.FC = () => {
                       </div>
                       <div className="bg-[var(--surface)] p-4 rounded-2xl border border-[var(--border)]">
                         <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-1">Fertilizer</p>
-                        <p className="text-sm font-bold text-[var(--text)]">NPK 12:32:16</p>
+                        <p className="text-sm font-bold text-[var(--text)]">{topRecommendedCrop.fertilizer}</p>
                       </div>
                       <div className="bg-[var(--surface)] p-4 rounded-2xl border border-[var(--border)]">
                         <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-1">Harvest Time</p>

@@ -109,10 +109,32 @@ export const SoilAdvisor: React.FC = () => {
       };
 
       const res = await API.post('/ml/recommend-crop', payload);
+      const recommendedCrop = res.data.recommendedCrop || 'Rice';
+
+      // Fetch dynamic ML-based Fertilizer Prediction for this crop
+      let fertilizerName = 'NPK 19-19-19'; // Robust default fallback
+      try {
+        const fertPayload = {
+          temperature: payload.temperature,
+          humidity: payload.humidity,
+          moisture: formData.moisture || '35',
+          soilType: formData.soilType || 'Loamy',
+          cropType: recommendedCrop,
+          n: payload.n,
+          p: payload.p,
+          k: payload.k
+        };
+        const fertRes = await API.post('/ml/predict-fertilizer', fertPayload);
+        if (fertRes.data && fertRes.data.recommendedFertilizer) {
+          fertilizerName = fertRes.data.recommendedFertilizer;
+        }
+      } catch (fErr) {
+        console.warn("Fertilizer prediction call failed, using default NPK", fErr);
+      }
       
       setResult({
         ...res.data,
-        fertilizer: formData.soilType === 'Sandy' ? 'DAP + Urea' : 'NPK 19-19-19',
+        fertilizer: fertilizerName,
         irrigation: formData.waterAvailability === 'Low' ? 'Drip Irrigation (Alternate Days)' : 'Flood Irrigation (Weekly)',
         expectedYield: (parseFloat(formData.landSize) * 2.4).toFixed(1) + " Tons",
         estProfit: "₹" + (parseFloat(formData.landSize) * 45000).toLocaleString(),
