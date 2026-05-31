@@ -71,12 +71,16 @@ const connectDB = async (forceSync = false) => {
     DailyTask.belongsTo(User, { foreignKey: "userId", targetKey: "_id", as: "user" });
 
     // Sync database models with MySQL database tables
-    if (forceSync) {
+    const shouldReset = forceSync || process.env.DB_RESET === "true";
+    if (shouldReset) {
+      console.log("Database reset triggered 🧹 Wiping duplicate indexes and recreating tables...");
       await sequelize.query("SET FOREIGN_KEY_CHECKS = 0");
       await sequelize.sync({ force: true });
       await sequelize.query("SET FOREIGN_KEY_CHECKS = 1");
+      console.log("Database tables cleanly recreated! ✅");
     } else {
-      await sequelize.sync({ alter: true });
+      // In production, sync() without alter: true avoids index duplication bugs
+      await sequelize.sync();
     }
     console.log("MySQL Database synced ✅");
   } catch (error) {
