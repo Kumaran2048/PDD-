@@ -40,7 +40,7 @@ const Login = () => {
         });
         window.google.accounts.id.renderButton(
           document.getElementById('googleSignInBtn'),
-          { theme: 'outline', size: 'large', width: '100%' }
+          { theme: 'outline', size: 'large', width: 360 }
         );
       }
     };
@@ -434,7 +434,7 @@ const Login = () => {
               <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#9ca3af', letterSpacing: '1px' }}>OR SIGN IN WITH</span>
               <div style={{ flex: 1, height: '1px', background: '#e5e7eb' }}></div>
             </div>
-            <div id="googleSignInBtn" style={{ width: '100%', minHeight: '44px' }}></div>
+            <div id="googleSignInBtn" style={{ width: '100%', minHeight: '44px', display: 'flex', justifyContent: 'center' }}></div>
           </div>
         )}
 

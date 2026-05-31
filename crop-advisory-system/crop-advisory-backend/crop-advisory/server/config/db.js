@@ -23,13 +23,21 @@ const connectDB = async (forceSync = false) => {
     const password = process.env.DB_PASSWORD || "";
     const dbName = process.env.DB_NAME || "crop_advisory";
 
-    const connection = await mysql.createConnection({ host, port, user, password });
-    if (forceSync) {
-      await connection.query(`DROP DATABASE IF EXISTS \`${dbName}\`;`);
-      console.log(`Database \`${dbName}\` dropped for clean recreation 🧹`);
+    // Only attempt raw connection and DB creation/drop queries if not in production (e.g. Aiven)
+    const isProduction = process.env.NODE_ENV === "production" || process.env.DB_SSL === "true";
+    if (!isProduction) {
+      try {
+        const connection = await mysql.createConnection({ host, port, user, password });
+        if (forceSync) {
+          await connection.query(`DROP DATABASE IF EXISTS \`${dbName}\`;`);
+          console.log(`Database \`${dbName}\` dropped for clean recreation 🧹`);
+        }
+        await connection.query(`CREATE DATABASE IF NOT EXISTS \`${dbName}\`;`);
+        await connection.end();
+      } catch (rawError) {
+        console.warn(`Raw MySQL connection skipped or failed: ${rawError.message}`);
+      }
     }
-    await connection.query(`CREATE DATABASE IF NOT EXISTS \`${dbName}\`;`);
-    await connection.end();
 
     // Authenticate connection
     await sequelize.authenticate();
