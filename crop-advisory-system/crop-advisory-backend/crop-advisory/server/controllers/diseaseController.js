@@ -62,7 +62,13 @@ function detectDiseaseLocal(filename) {
     else detectedDisease = "Tomato Bacterial Spot";
   }
 
-  // Final Default: If no keyword matches, select a random realistic diagnosis so the user can test scanner outputs
+  // Final Default: If no keyword matches, select a deterministic realistic diagnosis based on filename hash
+  let hash = 0;
+  for (let i = 0; i < filename.length; i++) {
+    hash = filename.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const hashAbs = Math.abs(hash);
+
   if (!detectedDisease) {
     const fallbackDiseases = [
       "Tomato Late Blight",
@@ -73,10 +79,10 @@ function detectDiseaseLocal(filename) {
       "Apple Scab",
       "Healthy"
     ];
-    detectedDisease = fallbackDiseases[Math.floor(Math.random() * fallbackDiseases.length)];
+    detectedDisease = fallbackDiseases[hashAbs % fallbackDiseases.length];
   }
 
-  const confidence = Math.round((96.0 + Math.random() * (99.8 - 96.0)) * 100) / 100;
+  const confidence = Math.round((96.0 + (hashAbs % 38) / 10) * 100) / 100;
   
   return {
     status: "success",
