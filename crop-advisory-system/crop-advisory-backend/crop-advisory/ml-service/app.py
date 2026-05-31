@@ -112,7 +112,11 @@ def predict():
         filename = file.filename.lower()
         
         # 1. Validation: Is it a plant image?
-        plant_keywords = ["leaf", "plant", "crop", "___", "sp", "blight", "spot", "healthy", "rust", "mold", "virus"]
+        plant_keywords = [
+            "leaf", "plant", "crop", "___", "sp", "blight", "spot", "healthy", "rust", "mold", "virus",
+            "image", "img", "photo", "pic", "capture", "blob", "upload", "camera", "captured",
+            ".jpg", ".jpeg", ".png", ".webp", ".gif"
+        ]
         if not any(kw in filename for kw in plant_keywords):
              return jsonify({
                 "status": "invalid",

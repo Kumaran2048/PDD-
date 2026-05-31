@@ -25,7 +25,8 @@ function detectDiseaseLocal(filename) {
   // 1. Validation: Is it a plant image?
   const plantKeywords = [
     "leaf", "plant", "crop", "___", "sp", "blight", "spot", "healthy", "rust", "mold", "virus",
-    "image", "img", "photo", "pic", "capture", "blob", "upload", "camera", "captured"
+    "image", "img", "photo", "pic", "capture", "blob", "upload", "camera", "captured",
+    ".jpg", ".jpeg", ".png", ".webp", ".gif"
   ];
   const isNumeric = /^\d+$/.test(filename.split('.')[0]);
   if (!isNumeric && !plantKeywords.some(kw => filename.includes(kw))) {
