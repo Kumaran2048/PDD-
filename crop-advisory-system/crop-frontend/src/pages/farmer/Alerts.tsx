@@ -58,44 +58,110 @@ export const Alerts: React.FC = () => {
 
       <div className="space-y-4">
         {/* Outbreak Alert */}
-        {hasOutbreak &&
-        <Card className="border-l-4 border-l-danger bg-red-50 dark:bg-red-900/20">
-            <div className="flex gap-3">
-              <AlertTriangleIcon
-              className="text-danger flex-shrink-0 mt-1"
-              size={20} />
-            
-              <div>
-                <h3 className="font-bold text-danger mb-1">OUTBREAK WARNING</h3>
-                <p className="text-sm text-[var(--text)] mb-2">
-                  Multiple cases of Tomato Late Blight detected in{' '}
-                  {farmer.district} district.
-                </p>
-                <p className="text-xs text-[var(--text-muted)]">2 hours ago</p>
+        {hasOutbreak && (() => {
+          const isTranslated = translatedAlerts['outbreak'];
+          
+          let title = "OUTBREAK WARNING";
+          let message = `Multiple cases of Tomato Late Blight detected in ${farmer.district} district.`;
+          
+          if (isTranslated && language !== 'en') {
+            if (language === 'hi') {
+              title = "प्रकोप की चेतावनी";
+              message = `${farmer.district} जिले में टमाटर के पछेती झुलसा रोग (Tomato Late Blight) के कई मामले पाए गए हैं।`;
+            } else if (language === 'ta') {
+              title = "வெடிப்பு எச்சரிக்கை";
+              message = `${farmer.district} மாவட்டத்தில் தக்காளி லேட் பிளைட் நோயின் பல வழக்குகள் கண்டறியப்பட்டுள்ளன.`;
+            } else if (language === 'mr') {
+              title = "प्रकोपाचा इशारा";
+              message = `${farmer.district} जिल्ह्यात टोमॅटो लेट ब्लाईटचे अनेक रुग्ण आढळले आहेत.`;
+            } else if (language === 'te') {
+              title = "వ్యాప్తి హెచ్చరిక";
+              message = `${farmer.district} జిల్లాలో టమోటా లేట్ బ్లైట్ యొక్క బహుళ కేసులు కనుగొనబడ్డాయి.`;
+            }
+          }
+
+          return (
+            <Card className="border-l-4 border-l-danger bg-red-50 dark:bg-red-900/20">
+              <div className="flex gap-3">
+                <AlertTriangleIcon
+                className="text-danger flex-shrink-0 mt-1"
+                size={20} />
+              
+                <div className="flex-1">
+                  <div className="flex justify-between items-start">
+                    <h3 className="font-bold text-danger mb-1">{title}</h3>
+                    {language !== 'en' && (
+                      <button 
+                        onClick={() => toggleTranslate('outbreak')}
+                        className="text-xs text-danger hover:underline"
+                      >
+                        {isTranslated ? 'Show Original' : 'Translate'}
+                      </button>
+                    )}
+                  </div>
+                  <p className="text-sm text-[var(--text)] mb-2">
+                    {message}
+                  </p>
+                  <p className="text-xs text-[var(--text-muted)]">2 hours ago</p>
+                </div>
               </div>
-            </div>
-          </Card>
-        }
+            </Card>
+          );
+        })()}
 
         {/* Weather Alert */}
-        <Card className="border-l-4 border-l-blue-500 bg-blue-50 dark:bg-blue-900/20">
-          <div className="flex gap-3">
-            <CloudLightningIcon
-              className="text-blue-500 flex-shrink-0 mt-1"
-              size={20} />
-            
-            <div>
-              <h3 className="font-bold text-blue-700 dark:text-blue-400 mb-1">
-                Heavy Rain Expected
-              </h3>
-              <p className="text-sm text-[var(--text)] mb-2">
-                15-20mm rain expected tomorrow. Delay irrigation and secure
-                harvested crops.
-              </p>
-              <p className="text-xs text-[var(--text-muted)]">5 hours ago</p>
-            </div>
-          </div>
-        </Card>
+        {(() => {
+          const isTranslated = translatedAlerts['weather'];
+          
+          let title = "Heavy Rain Expected";
+          let message = "15-20mm rain expected tomorrow. Delay irrigation and secure harvested crops.";
+          
+          if (isTranslated && language !== 'en') {
+            if (language === 'hi') {
+              title = "भारी बारिश की संभावना";
+              message = "कल 15-20 मिमी बारिश की उम्मीद है। सिंचाई में देरी करें और कटी हुई फसलों को सुरक्षित करें।";
+            } else if (language === 'ta') {
+              title = "கனமழை எதிர்பார்க்கப்படுகிறது";
+              message = "நாளை 15-20மிமீ மழை எதிர்பார்க்கப்படுகிறது. நீர்ப்பாசனத்தைத் தள்ளிப்போட்டு, அறுவடை செய்த பயிர்களைப் பாதுகாக்கவும்.";
+            } else if (language === 'mr') {
+              title = "मुसळधार पावसाची शक्यता";
+              message = "उद्या 15-20 मिमी पावसाची शक्यता आहे. सिंचनास उशीर करा आणि काढणी केलेले पीक सुरक्षित करा.";
+            } else if (language === 'te') {
+              title = "భారీ వర్షం సూచన";
+              message = "రేపు 15-20 మిమీ వర్షం పడే అవకాశం ఉంది. నీటిపారుదలని ఆలస్యం చేయండి మరియు కోసిన పంటలను సురక్షితం చేయండి.";
+            }
+          }
+
+          return (
+            <Card className="border-l-4 border-l-blue-500 bg-blue-50 dark:bg-blue-900/20">
+              <div className="flex gap-3">
+                <CloudLightningIcon
+                  className="text-blue-500 flex-shrink-0 mt-1"
+                  size={20} />
+                
+                <div className="flex-1">
+                  <div className="flex justify-between items-start">
+                    <h3 className="font-bold text-blue-700 dark:text-blue-400 mb-1">
+                      {title}
+                    </h3>
+                    {language !== 'en' && (
+                      <button 
+                        onClick={() => toggleTranslate('weather')}
+                        className="text-xs text-blue-500 hover:underline"
+                      >
+                        {isTranslated ? 'Show Original' : 'Translate'}
+                      </button>
+                    )}
+                  </div>
+                  <p className="text-sm text-[var(--text)] mb-2">
+                    {message}
+                  </p>
+                  <p className="text-xs text-[var(--text-muted)]">5 hours ago</p>
+                </div>
+              </div>
+            </Card>
+          );
+        })()}
 
         {/* Broadcasts from Officer */}
         {districtBroadcasts.map((broadcast) => {
