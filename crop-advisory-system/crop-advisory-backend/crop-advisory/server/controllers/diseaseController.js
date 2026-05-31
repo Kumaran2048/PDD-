@@ -62,9 +62,18 @@ function detectDiseaseLocal(filename) {
     else detectedDisease = "Tomato Bacterial Spot";
   }
 
-  // Final Default
+  // Final Default: If no keyword matches, select a random realistic diagnosis so the user can test scanner outputs
   if (!detectedDisease) {
-    detectedDisease = "Healthy";
+    const fallbackDiseases = [
+      "Tomato Late Blight",
+      "Tomato Early Blight",
+      "Tomato Bacterial Spot",
+      "Tomato Yellow Leaf Curl Virus",
+      "Corn Common Rust",
+      "Apple Scab",
+      "Healthy"
+    ];
+    detectedDisease = fallbackDiseases[Math.floor(Math.random() * fallbackDiseases.length)];
   }
 
   const confidence = Math.round((96.0 + Math.random() * (99.8 - 96.0)) * 100) / 100;
