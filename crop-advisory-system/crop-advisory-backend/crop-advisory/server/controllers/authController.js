@@ -28,8 +28,10 @@ const register = async (req, res) => {
       return res.status(400).json({ message: "User already exists with this email" });
     }
 
-    if (phone) {
-      const existingPhone = await User.findOne({ phone });
+    const formattedPhone = (phone && phone.trim()) ? phone.trim() : null;
+
+    if (formattedPhone) {
+      const existingPhone = await User.findOne({ phone: formattedPhone });
       if (existingPhone) {
         return res.status(400).json({ message: "User already exists with this phone number" });
       }
@@ -43,7 +45,7 @@ const register = async (req, res) => {
       name,
       email,
       password,
-      phone,
+      phone: formattedPhone,
       role: role || "farmer",
       district,
       state,
@@ -166,9 +168,24 @@ const changePassword = async (req, res) => {
 const updateProfile = async (req, res) => {
   try {
     const { name, phone, district, state } = req.body;
+    
+    // Map empty/whitespace phone to null to prevent MySQL unique key violation
+    const formattedPhone = (phone && phone.trim()) ? phone.trim() : null;
+
+    // Check if phone number is already taken by another user
+    if (formattedPhone) {
+      const existingUser = await User.findOne({
+        phone: formattedPhone,
+        _id: { $ne: req.user._id }
+      });
+      if (existingUser) {
+        return res.status(400).json({ message: "Phone number is already in use by another account" });
+      }
+    }
+
     const user = await User.findByIdAndUpdate(
       req.user._id,
-      { name, phone, district, state },
+      { name, phone: formattedPhone, district, state },
       { new: true, runValidators: true }
     ).select("-password");
 
