@@ -16,7 +16,7 @@ const seedUsers = async () => {
       {
         name: "Farmer Demo",
         email: "farmer@demo.com",
-        password: "password123",
+        password: "password",
         phone: "9876543210",
         role: "farmer",
         district: "Nashik",
@@ -26,7 +26,7 @@ const seedUsers = async () => {
       {
         name: "Officer Demo",
         email: "officer@demo.com",
-        password: "password123",
+        password: "password",
         phone: "9876543211",
         role: "officer",
         district: "Nashik",
@@ -35,8 +35,8 @@ const seedUsers = async () => {
       },
       {
         name: "Admin Kumaran",
-        email: "kumaran@gmail.com",
-        password: "123456",
+        email: "admin@demo.com",
+        password: "password",
         phone: "9876543212",
         role: "admin",
         district: "Nashik",
@@ -52,9 +52,9 @@ const seedUsers = async () => {
 
     console.log("Demo Users Seeded Successfully! ✅");
     console.log("--------------------------------");
-    console.log("Farmer: farmer@demo.com / password123");
-    console.log("Officer: officer@demo.com / password123");
-    console.log("Admin: admin@demo.com / password123");
+    console.log("Farmer: farmer@demo.com / password");
+    console.log("Officer: officer@demo.com / password");
+    console.log("Admin: admin@demo.com / password");
     console.log("--------------------------------");
     
     process.exit();
