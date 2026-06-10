@@ -5,7 +5,18 @@ const MarketPrice = require("../models/MarketPrice");
 // ── @POST /api/farm/profile ──────────────────────────────────────
 const createOrUpdateProfile = async (req, res) => {
   try {
-    const { landSize, soilType, waterSource, village, district, state, latitude, longitude } = req.body;
+    const { 
+      landSize, 
+      soilType = "Loamy Soil", 
+      waterSource = "Rain-fed", 
+      village = "", 
+      district = req.user.district || "Unknown", 
+      state = req.user.state || "Unknown", 
+      latitude, 
+      longitude 
+    } = req.body;
+
+    const finalLandSize = landSize !== undefined && landSize !== null ? parseFloat(landSize) : 1.0;
 
     // Check if profile already exists
     let profile = await FarmProfile.findOne({ userId: req.user._id });
@@ -14,7 +25,7 @@ const createOrUpdateProfile = async (req, res) => {
       // Update existing
       profile = await FarmProfile.findOneAndUpdate(
         { userId: req.user._id },
-        { landSize, soilType, waterSource, village, district, state, latitude, longitude },
+        { landSize: finalLandSize, soilType, waterSource, village, district, state, latitude, longitude },
         { new: true }
       );
       return res.json({ message: "Farm profile updated", profile });
@@ -23,7 +34,7 @@ const createOrUpdateProfile = async (req, res) => {
     // Create new
     profile = await FarmProfile.create({
       userId: req.user._id,
-      landSize,
+      landSize: finalLandSize,
       soilType,
       waterSource,
       village,
