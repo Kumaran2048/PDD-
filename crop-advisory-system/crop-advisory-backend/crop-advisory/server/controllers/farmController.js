@@ -55,7 +55,7 @@ const getProfile = async (req, res) => {
   try {
     const profile = await FarmProfile.findOne({ userId: req.user._id }).populate("activeCrop");
     if (!profile) {
-      return res.status(404).json({ message: "Farm profile not found. Please set up your farm." });
+      return res.json({ profile: null, message: "Farm profile not found. Please set up your farm." });
     }
     res.json({ profile });
   } catch (error) {

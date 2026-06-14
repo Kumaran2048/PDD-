@@ -30,8 +30,8 @@ const syncGlobalMarketPrices = async () => {
         { c: "Turmeric", m: "Erode", d: "Erode", p: 7000, s: "Tamil Nadu" }
       ];
 
-      await Promise.all(diverseSeeds.map(seed => 
-        MarketPrice.findOneAndUpdate(
+      for (const seed of diverseSeeds) {
+        await MarketPrice.findOneAndUpdate(
           { mandiName: seed.m, cropName: seed.c },
           {
             state: seed.s,
@@ -43,21 +43,21 @@ const syncGlobalMarketPrices = async () => {
             unit: "Quintal"
           },
           { upsert: true }
-        )
-      ));
+        );
+      }
     }
 
     if (!apiKey) return null;
 
     // 3. FETCH LIVE DATA
     const url = `https://api.data.gov.in/resource/9ef273bd-a402-459c-809a-cfc424c2d210?api-key=${apiKey}&format=json&limit=100`;
-    const response = await axios.get(url);
+    const response = await axios.get(url, { timeout: 5000 });
     const records = response.data.records;
 
     if (records && records.length > 0) {
-      await Promise.all(records.map(async (rec) => {
+      for (const rec of records) {
         const stdName = rec.commodity.charAt(0).toUpperCase() + rec.commodity.slice(1).toLowerCase();
-        return await MarketPrice.findOneAndUpdate(
+        await MarketPrice.findOneAndUpdate(
           { mandiName: rec.market, cropName: stdName, date: new Date(rec.arrival_date) },
           {
             state: rec.state,
@@ -69,7 +69,7 @@ const syncGlobalMarketPrices = async () => {
           },
           { upsert: true, new: true }
         );
-      }));
+      }
     }
     return true;
   } catch (err) {
@@ -86,24 +86,26 @@ const syncMarketPrices = async (cropName, district) => {
 
     const url = `https://api.data.gov.in/resource/9ef273bd-a402-459c-809a-cfc424c2d210?api-key=${apiKey}&format=json&filters[commodity]=${cropName}&limit=20`;
     
-    const response = await axios.get(url);
+    const response = await axios.get(url, { timeout: 5000 });
     const records = response.data.records;
 
     if (records && records.length > 0) {
-      const savedPrices = await Promise.all(records.map(async (rec) => {
-         return await MarketPrice.findOneAndUpdate(
-           { mandiName: rec.market, cropName: rec.commodity, date: new Date(rec.arrival_date) },
-           {
-             state: rec.state,
-             district: rec.district,
-             minPrice: parseFloat(rec.min_price) || 0,
-             maxPrice: parseFloat(rec.max_price) || 0,
-             modalPrice: parseFloat(rec.modal_price) || 0,
-             unit: "Quintal"
-           },
-           { upsert: true, new: true }
-         );
-      }));
+      const savedPrices = [];
+      for (const rec of records) {
+        const price = await MarketPrice.findOneAndUpdate(
+          { mandiName: rec.market, cropName: rec.commodity, date: new Date(rec.arrival_date) },
+          {
+            state: rec.state,
+            district: rec.district,
+            minPrice: parseFloat(rec.min_price) || 0,
+            maxPrice: parseFloat(rec.max_price) || 0,
+            modalPrice: parseFloat(rec.modal_price) || 0,
+            unit: "Quintal"
+          },
+          { upsert: true, new: true }
+        );
+        savedPrices.push(price);
+      }
       return savedPrices;
     }
   } catch (err) {
