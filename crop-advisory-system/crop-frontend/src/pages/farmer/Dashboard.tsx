@@ -151,7 +151,9 @@ export const FarmerDashboard: React.FC = () => {
       farmer.landSize,
       activeCropData.currentPrice
     );
-    estProfit = prediction.netProfit;
+    // If there are actual recorded expenses, subtract them from revenue instead of the estimated mock base cost
+    const actualCost = totalExpenses > 0 ? totalExpenses : prediction.totalCost;
+    estProfit = prediction.revenue - actualCost;
   }
 
   return (

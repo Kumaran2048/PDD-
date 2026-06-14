@@ -27,7 +27,7 @@ Expense.init(
       defaultValue: null
     },
     type: {
-      type: DataTypes.ENUM("Seeds", "Fertilizer", "Labour", "Irrigation", "Pesticide", "Equipment", "Other"),
+      type: DataTypes.ENUM("Seeds", "Seed", "Fertilizer", "Labour", "Labor", "Irrigation", "Pesticide", "Equipment", "Other"),
       allowNull: false
     },
     amount: {
