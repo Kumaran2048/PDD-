@@ -22,12 +22,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
 
   const fetchProfile = async (basicUser: User): Promise<User> => {
+    if (basicUser && !basicUser.id && basicUser._id) {
+      basicUser.id = basicUser._id;
+    }
     if (basicUser.role === 'farmer') {
       try {
         const { data } = await API.get('/farm/profile');
         if (data.profile) {
           return {
             ...basicUser,
+            id: basicUser._id,
             landSize: data.profile.landSize,
             soilType: data.profile.soilType,
             activeCrop: data.profile.activeCrop?.name || null,

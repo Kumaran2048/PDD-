@@ -245,6 +245,9 @@ class MongooseQueryBuilder {
 class MongooseCompatModel extends Model {
   toJSON() {
     const data = super.toJSON();
+    if (data._id !== undefined) {
+      data.id = data._id;
+    }
     if (data.activeCropDetails !== undefined) {
       data.activeCrop = data.activeCropDetails;
       delete data.activeCropDetails;
