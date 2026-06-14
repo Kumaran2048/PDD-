@@ -1,9 +1,9 @@
 const { Model, Op } = require("sequelize");
 
-function translateMongoQuery(query) {
+function translateMongoQuery(query, model) {
   if (query === null || query === undefined) return query;
   if (Array.isArray(query)) {
-    return query.map(translateMongoQuery);
+    return query.map(q => translateMongoQuery(q, model));
   }
   if (typeof query !== "object" || query instanceof Date || query instanceof RegExp) {
     return query;
@@ -17,34 +17,46 @@ function translateMongoQuery(query) {
     // Convert keys
     if (key === "$or") {
       newKey = Op.or;
-      newValue = translateMongoQuery(value);
+      newValue = translateMongoQuery(value, model);
     } else if (key === "$and") {
       newKey = Op.and;
-      newValue = translateMongoQuery(value);
+      newValue = translateMongoQuery(value, model);
     } else if (key === "$in") {
       newKey = Op.in;
-      newValue = translateMongoQuery(value);
+      newValue = translateMongoQuery(value, model);
     } else if (key === "$nin") {
       newKey = Op.notIn;
-      newValue = translateMongoQuery(value);
+      newValue = translateMongoQuery(value, model);
     } else if (key === "$eq") {
       newKey = Op.eq;
-      newValue = translateMongoQuery(value);
+      newValue = translateMongoQuery(value, model);
     } else if (key === "$ne") {
       newKey = Op.ne;
-      newValue = translateMongoQuery(value);
+      newValue = translateMongoQuery(value, model);
     } else if (key === "$gt") {
       newKey = Op.gt;
-      newValue = translateMongoQuery(value);
+      newValue = translateMongoQuery(value, model);
     } else if (key === "$gte") {
       newKey = Op.gte;
-      newValue = translateMongoQuery(value);
+      newValue = translateMongoQuery(value, model);
     } else if (key === "$lt") {
       newKey = Op.lt;
-      newValue = translateMongoQuery(value);
+      newValue = translateMongoQuery(value, model);
     } else if (key === "$lte") {
       newKey = Op.lte;
-      newValue = translateMongoQuery(value);
+      newValue = translateMongoQuery(value, model);
+    }
+
+    // JSON array query support: e.g. { season: "Kharif" } where season is DataTypes.JSON
+    if (model && model.rawAttributes && model.rawAttributes[key] && model.rawAttributes[key].type && model.rawAttributes[key].type.key === "JSON") {
+      if (typeof value === "string" || typeof value === "number") {
+        const sequelize = model.sequelize || require("../config/sequelize");
+        result[key] = sequelize.where(
+          sequelize.fn("JSON_CONTAINS", sequelize.col(key), JSON.stringify(value)),
+          1
+        );
+        continue;
+      }
     }
 
     // Special handling for { field: { $regex: '...', $options: 'i' } } or RegExp instances
@@ -77,7 +89,7 @@ function translateMongoQuery(query) {
         continue;
       }
 
-      newValue = translateMongoQuery(value);
+      newValue = translateMongoQuery(value, model);
     } else if (value instanceof RegExp) {
       let patternStr = value.source;
       let startsWithAnchor = false;
@@ -272,12 +284,12 @@ class MongooseCompatModel extends Model {
   }
 
   static findOne(query = {}) {
-    const where = translateMongoQuery(query.where || query);
+    const where = translateMongoQuery(query.where || query, this);
     return new MongooseQueryBuilder(this, "findOne", { where });
   }
 
   static find(query = {}) {
-    const where = translateMongoQuery(query.where || query);
+    const where = translateMongoQuery(query.where || query, this);
     return new MongooseQueryBuilder(this, "find", { where });
   }
 
@@ -286,7 +298,7 @@ class MongooseCompatModel extends Model {
   }
 
   static findOneAndUpdate(query = {}, update = {}, options = {}) {
-    const where = translateMongoQuery(query.where || query);
+    const where = translateMongoQuery(query.where || query, this);
     return new MongooseQueryBuilder(this, "findOneAndUpdate", { where }, update, options);
   }
 
@@ -298,7 +310,7 @@ class MongooseCompatModel extends Model {
   }
 
   static async findOneAndDelete(query = {}) {
-    const where = translateMongoQuery(query.where || query);
+    const where = translateMongoQuery(query.where || query, this);
     const instance = await this.sequelizeFindOne({ where });
     if (!instance) return null;
     await instance.destroy();
@@ -306,12 +318,12 @@ class MongooseCompatModel extends Model {
   }
 
   static deleteMany(query = {}) {
-    const where = translateMongoQuery(query.where || query);
+    const where = translateMongoQuery(query.where || query, this);
     return this.destroy({ where });
   }
 
   static updateMany(query = {}, data = {}) {
-    const where = translateMongoQuery(query.where || query);
+    const where = translateMongoQuery(query.where || query, this);
     const cleanData = { ...data };
     for (const key in cleanData) {
       if (key.startsWith("$")) delete cleanData[key];
@@ -320,12 +332,12 @@ class MongooseCompatModel extends Model {
   }
 
   static deleteOne(query = {}) {
-    const where = translateMongoQuery(query.where || query);
+    const where = translateMongoQuery(query.where || query, this);
     return this.destroy({ where, limit: 1 });
   }
 
   static distinct(field, query = {}) {
-    const where = translateMongoQuery(query.where || query);
+    const where = translateMongoQuery(query.where || query, this);
     return this.findAll({
       attributes: [[this.sequelize.fn("DISTINCT", this.sequelize.col(field)), field]],
       where,

@@ -68,10 +68,48 @@ export const AppDataProvider: React.FC<{
       setCrops(cropsData.map((c: any) => ({
         id: c._id,
         name: c.name,
-        emoji: '🌿',
+        emoji: (() => {
+          const emojiMap: Record<string, string> = {
+            tomato: '🍅',
+            potato: '🥔',
+            wheat: '🌾',
+            maize: '🌽',
+            rice: '🌾',
+            cotton: '☁️',
+            jute: '🌱',
+            coconut: '🥥',
+            banana: '🍌',
+            apple: '🍎',
+            grapes: '🍇',
+            orange: '🍊',
+            papaya: '🥭',
+            mango: '🥭',
+            chilli: '🌶️',
+            garlic: '🧄',
+            ginger: '🌱',
+            onion: '🧅',
+            turmeric: '🌱',
+            muskmelon: '🍈',
+            watermelon: '🍉',
+            pomegranate: '🍎',
+            blackgram: '🌱',
+            mungbean: '🌱',
+            lentil: '🌱'
+          };
+          return emojiMap[c.name.toLowerCase()] || '🌿';
+        })(),
         idealSoil: c.soilTypes || [],
         season: c.season || [],
-        avgYieldPerAcre: 2.5,
+        avgYieldPerAcre: (() => {
+          if (!c.expectedYieldPerAcre) return 15;
+          const match = c.expectedYieldPerAcre.match(/(\d+)/);
+          if (!match) return 15;
+          let val = parseInt(match[1]);
+          if (c.expectedYieldPerAcre.toLowerCase().includes("ton")) {
+            val = val * 10;
+          }
+          return val;
+        })(),
         currentPrice: 0,
         priceTrend: 0,
         minPrice: 0,
