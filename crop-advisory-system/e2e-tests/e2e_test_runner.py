@@ -90,6 +90,13 @@ def run_e2e_tests():
                         actual_result = "Failed to find login elements on page."
                         
                 elif tc["id"] == "TC-050": # Route protection check
+                    driver.get("http://localhost:5173/login")
+                    time.sleep(0.5)
+                    try:
+                        driver.execute_script("window.localStorage.clear(); window.sessionStorage.clear();")
+                        driver.delete_all_cookies()
+                    except Exception:
+                        pass
                     driver.get("http://localhost:5173/admin/health")
                     time.sleep(1)
                     if "login" in driver.current_url:
