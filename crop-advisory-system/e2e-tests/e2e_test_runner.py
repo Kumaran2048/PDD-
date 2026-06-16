@@ -61,8 +61,10 @@ def run_e2e_tests():
         if driver and frontend_running:
             try:
                 if tc["id"] == "TC-021": # Login positive check
+                    print("  [Step 1] Loading login page http://localhost:5173/login...")
                     driver.get("http://localhost:5173/login")
                     time.sleep(1)
+                    print("  [Step 2] Clearing previous storage and browser session cookies...")
                     try:
                         driver.execute_script("window.localStorage.clear(); window.sessionStorage.clear();")
                         driver.delete_all_cookies()
@@ -70,25 +72,32 @@ def run_e2e_tests():
                         pass
                     driver.refresh()
                     time.sleep(1)
-                    # Try to find elements
+                    
+                    print("  [Step 3] Locating credentials input fields...")
                     email_input = driver.find_element("css selector", "input[type='email']")
                     pass_input = driver.find_element("css selector", "input[type='password']")
                     submit_btn = driver.find_element("css selector", "button[type='submit']")
                     
+                    print("  [Step 4] Typing Farmer credentials (farmer@demo.com)...")
                     email_input.clear()
                     email_input.send_keys("farmer@demo.com")
                     pass_input.clear()
                     pass_input.send_keys("password")
+                    
+                    print("  [Step 5] Clicking Sign In button...")
                     submit_btn.click()
                     time.sleep(3)
                     
-                    # Verify redirection and navigate
+                    print(f"  [Step 6] Current URL resolved: {driver.current_url}")
                     if "farmer" in driver.current_url:
                         status = "Pass"
+                        print("  [Step 7] Redirect verified. Navigating to Crops tab...")
                         driver.get("http://localhost:5173/farmer/crops")
                         time.sleep(1.5)
+                        print("  [Step 8] Navigating to Soil Advisor tab...")
                         driver.get("http://localhost:5173/farmer/soil")
                         time.sleep(1.5)
+                        print("  [Step 9] Navigating to Expenses tab...")
                         driver.get("http://localhost:5173/farmer/expenses")
                         time.sleep(1.5)
                         actual_result = "Login succeeded; successfully redirected to /farmer dashboard and navigated advisor tabs."
@@ -97,8 +106,10 @@ def run_e2e_tests():
                         actual_result = f"Login failed to redirect. Current URL: {driver.current_url}"
                 
                 elif tc["id"] == "TC-001": # Login UI check
+                    print("  [Step 1] Opening login page to verify structure...")
                     driver.get("http://localhost:5173/login")
                     time.sleep(1)
+                    print(f"  [Step 2] Checking page title and presence of form wrapper...")
                     if "Login" in driver.title or driver.find_element("css selector", "form"):
                         status = "Pass"
                         actual_result = "Login page wrapper rendered with full contrast and theme selectors."
@@ -107,8 +118,10 @@ def run_e2e_tests():
                         actual_result = "Failed to find login elements on page."
                         
                 elif tc["id"] == "TC-035": # Officer login and navigation check
+                    print("  [Step 1] Loading login page http://localhost:5173/login...")
                     driver.get("http://localhost:5173/login")
                     time.sleep(1)
+                    print("  [Step 2] Clearing session cookies...")
                     try:
                         driver.execute_script("window.localStorage.clear(); window.sessionStorage.clear();")
                         driver.delete_all_cookies()
@@ -116,13 +129,16 @@ def run_e2e_tests():
                         pass
                     driver.refresh()
                     time.sleep(1)
-                    # Find role tabs
+                    
+                    print("  [Step 3] Switching role tab to 'Officer'...")
                     role_buttons = driver.find_elements("css selector", "button")
                     for btn in role_buttons:
                         if "Officer" in btn.text:
                             btn.click()
                             time.sleep(0.5)
                             break
+                            
+                    print("  [Step 4] Typing Officer credentials (officer@demo.com)...")
                     email_input = driver.find_element("css selector", "input[type='email']")
                     pass_input = driver.find_element("css selector", "input[type='password']")
                     submit_btn = driver.find_element("css selector", "button[type='submit']")
@@ -130,14 +146,18 @@ def run_e2e_tests():
                     email_input.send_keys("officer@demo.com")
                     pass_input.clear()
                     pass_input.send_keys("password")
+                    
+                    print("  [Step 5] Submitting form...")
                     submit_btn.click()
                     time.sleep(3)
                     
-                    # Verify redirection
+                    print(f"  [Step 6] Current URL resolved: {driver.current_url}")
                     if "officer" in driver.current_url:
                         status = "Pass"
+                        print("  [Step 7] Redirect verified. Navigating to Farmers List...")
                         driver.get("http://localhost:5173/officer/farmers")
                         time.sleep(1.5)
+                        print("  [Step 8] Navigating to Outbreak Heatmap...")
                         driver.get("http://localhost:5173/officer/heatmap")
                         time.sleep(1.5)
                         actual_result = "Officer login succeeded; redirected to /officer and loaded heatmap successfully."
@@ -146,8 +166,10 @@ def run_e2e_tests():
                         actual_result = f"Officer login failed to redirect. Current URL: {driver.current_url}"
 
                 elif tc["id"] == "TC-042": # Admin login and navigation check
+                    print("  [Step 1] Loading login page http://localhost:5173/login...")
                     driver.get("http://localhost:5173/login")
                     time.sleep(1)
+                    print("  [Step 2] Clearing session cookies...")
                     try:
                         driver.execute_script("window.localStorage.clear(); window.sessionStorage.clear();")
                         driver.delete_all_cookies()
@@ -155,13 +177,16 @@ def run_e2e_tests():
                         pass
                     driver.refresh()
                     time.sleep(1)
-                    # Find role tabs
+                    
+                    print("  [Step 3] Switching role tab to 'Admin'...")
                     role_buttons = driver.find_elements("css selector", "button")
                     for btn in role_buttons:
                         if "Admin" in btn.text:
                             btn.click()
                             time.sleep(0.5)
                             break
+                            
+                    print("  [Step 4] Typing Admin credentials (admin@demo.com)...")
                     email_input = driver.find_element("css selector", "input[type='email']")
                     pass_input = driver.find_element("css selector", "input[type='password']")
                     submit_btn = driver.find_element("css selector", "button[type='submit']")
@@ -169,14 +194,18 @@ def run_e2e_tests():
                     email_input.send_keys("admin@demo.com")
                     pass_input.clear()
                     pass_input.send_keys("password")
+                    
+                    print("  [Step 5] Submitting form...")
                     submit_btn.click()
                     time.sleep(3)
                     
-                    # Verify redirection
+                    print(f"  [Step 6] Current URL resolved: {driver.current_url}")
                     if "admin" in driver.current_url:
                         status = "Pass"
+                        print("  [Step 7] Redirect verified. Navigating to Manage Officers page...")
                         driver.get("http://localhost:5173/admin/officers")
                         time.sleep(1.5)
+                        print("  [Step 8] Navigating to System Health page...")
                         driver.get("http://localhost:5173/admin/health")
                         time.sleep(1.5)
                         actual_result = "Admin login succeeded; redirected to /admin and loaded system health stats successfully."
@@ -185,20 +214,26 @@ def run_e2e_tests():
                         actual_result = f"Admin login failed to redirect. Current URL: {driver.current_url}"
 
                 elif tc["id"] == "TC-050": # Route protection check
+                    print("  [Step 1] Loading login page...")
                     driver.get("http://localhost:5173/login")
                     time.sleep(0.5)
+                    print("  [Step 2] Clearing session and deleting cookies...")
                     try:
                         driver.execute_script("window.localStorage.clear(); window.sessionStorage.clear();")
                         driver.delete_all_cookies()
                     except Exception:
                         pass
+                    print("  [Step 3] Attempting to access protected admin page http://localhost:5173/admin/health...")
                     driver.get("http://localhost:5173/admin/health")
                     time.sleep(1)
+                    print(f"  [Step 4] Current URL resolved: {driver.current_url}")
                     if "login" in driver.current_url:
                         status = "Pass"
+                        print("  [Step 5] Verification Pass: Redirected back to login.")
                         actual_result = "Route protection active; redirected guest back to login."
                     else:
                         status = "Fail"
+                        print("  [Step 5] Verification Fail: Loaded protected page without redirect.")
                         actual_result = f"Route not protected; loaded path {driver.current_url}"
                         
             except Exception as e:
