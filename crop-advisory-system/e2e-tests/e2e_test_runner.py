@@ -53,6 +53,10 @@ def run_e2e_tests():
         status = "Pass"
         actual_result = "Feature functions as expected; layout holds alignment thresholds."
         
+        is_live = tc["id"] in ["TC-001", "TC-021", "TC-050"] and driver and frontend_running
+        mode_str = "LIVE (Selenium)" if is_live else "SIMULATED / STATIC"
+        print(f"Running [{mode_str}] {tc['id']}: {tc['description']}")
+        
         # Live execution of Selenium for selected critical paths if driver is available
         if driver and frontend_running:
             try:
@@ -117,6 +121,9 @@ def run_e2e_tests():
             actual_result = "Server or Database offline; connection ping timed out."
         elif not backend_running and tc["category"] == "Unit" and tc["id"] in ["TC-064"]:
             status = "Pass"  # Static checks can still pass
+            
+        print(f"  -> Result: {status} | Actual: {actual_result}")
+        print("-" * 50)
             
         results.append({
             "id": tc["id"],
