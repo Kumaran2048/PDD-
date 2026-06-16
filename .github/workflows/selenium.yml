@@ -107,10 +107,15 @@ jobs:
                     time.sleep(2)
         "
 
-    - name: Run E2E Test Suite
+    - name: Run E2E Test Suite (Python)
       run: |
         cd crop-advisory-system/e2e-tests
         python e2e_test_runner.py
+
+    - name: Run E2E Test Suite (JavaScript)
+      run: |
+        cd crop-advisory-system
+        npm run candidate-e2e
 
     - name: Dump Backend Server Logs
       if: always()

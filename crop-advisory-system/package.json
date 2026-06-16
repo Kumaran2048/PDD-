@@ -8,10 +8,17 @@
         "dev:backend": "npm run dev --prefix crop-advisory-backend/crop-advisory/server",
         "dev:ml": "cd crop-advisory-backend/crop-advisory/ml-service && python app.py",
         "build": "npm install && npm run install:all",
-        "dev": "concurrently \"npm run dev --prefix crop-advisory-backend/crop-advisory/server\" \"npm run dev --prefix crop-frontend -- --host 0.0.0.0\"",
+        "dev": "concurrently \"npm run dev --prefix crop-advisory-backend/crop-advisory/server\" \"npm run dev --prefix crop-frontend -- --host 0.0.0.0 --port 5173\"",
+        "e2e": "concurrently --kill-others --success first \"npm run dev --prefix crop-advisory-backend/crop-advisory/server\" \"npm run dev --prefix crop-frontend -- --host 0.0.0.0 --port 5173\" \"wait-on http://localhost:5173 http://localhost:5000 && python e2e-tests/e2e_test_runner.py\"",
+        "candidate-e2e": "concurrently --kill-others --success first \"npm run dev --prefix crop-advisory-backend/crop-advisory/server\" \"npm run dev --prefix crop-frontend -- --host 0.0.0.0 --port 5173\" \"wait-on http-get://127.0.0.1:5173 http-get://127.0.0.1:5000 && mocha e2e-tests/e2e_test_runner.js --timeout 600000\"",
         "start": "npm start --prefix crop-advisory-backend/crop-advisory/server"
     },
     "devDependencies": {
-        "concurrently": "^8.2.2"
+        "concurrently": "^8.2.2",
+        "wait-on": "^7.0.1",
+        "chromedriver": "^120.0.0",
+        "exceljs": "^4.4.0",
+        "mocha": "^10.2.0",
+        "selenium-webdriver": "^4.15.0"
     }
 }
