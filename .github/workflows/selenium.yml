@@ -37,6 +37,27 @@ jobs:
         npm install
         npm run install:all
 
+    - name: Create Backend and Frontend .env Files
+      run: |
+        cat <<EOF > crop-advisory-system/crop-advisory-backend/crop-advisory/server/.env
+        PORT=5000
+        DB_HOST=127.0.0.1
+        DB_PORT=3306
+        DB_USER=root
+        DB_PASSWORD=sachshiv
+        DB_NAME=cropadvisor
+        JWT_SECRET=cropAdvisorySecretKey2024
+        JWT_EXPIRE=7d
+        OPENWEATHER_API_KEY=dummy_openweather_key
+        FLASK_URL=http://localhost:8000
+        AGMARKNET_API_KEY=dummy_agmarknet_key
+        EOF
+        
+        cat <<EOF > crop-advisory-system/crop-frontend/.env
+        VITE_GOOGLE_CLIENT_ID="727775400619-aavsvhsgpthv9m0c1m7jit44k8eo5k4k.apps.googleusercontent.com"
+        VITE_API_URL="http://localhost:5000/api"
+        EOF
+
     - name: Seed Database
       env:
         DB_HOST: 127.0.0.1
