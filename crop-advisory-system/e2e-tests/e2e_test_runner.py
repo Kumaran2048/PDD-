@@ -53,7 +53,7 @@ def run_e2e_tests():
         status = "Pass"
         actual_result = "Feature functions as expected; layout holds alignment thresholds."
         
-        is_live = tc["id"] in ["TC-001", "TC-021", "TC-050"] and driver and frontend_running
+        is_live = tc["id"] in ["TC-001", "TC-021", "TC-035", "TC-042", "TC-050"] and driver and frontend_running
         mode_str = "LIVE (Selenium)" if is_live else "SIMULATED / STATIC"
         print(f"Running [{mode_str}] {tc['id']}: {tc['description']}")
         
@@ -62,6 +62,13 @@ def run_e2e_tests():
             try:
                 if tc["id"] == "TC-021": # Login positive check
                     driver.get("http://localhost:5173/login")
+                    time.sleep(1)
+                    try:
+                        driver.execute_script("window.localStorage.clear(); window.sessionStorage.clear();")
+                        driver.delete_all_cookies()
+                    except Exception:
+                        pass
+                    driver.refresh()
                     time.sleep(1)
                     # Try to find elements
                     email_input = driver.find_element("css selector", "input[type='email']")
@@ -75,10 +82,16 @@ def run_e2e_tests():
                     submit_btn.click()
                     time.sleep(3)
                     
-                    # Verify redirection
+                    # Verify redirection and navigate
                     if "farmer" in driver.current_url:
                         status = "Pass"
-                        actual_result = "Login succeeded; successfully redirected to /farmer dashboard."
+                        driver.get("http://localhost:5173/farmer/crops")
+                        time.sleep(1.5)
+                        driver.get("http://localhost:5173/farmer/soil")
+                        time.sleep(1.5)
+                        driver.get("http://localhost:5173/farmer/expenses")
+                        time.sleep(1.5)
+                        actual_result = "Login succeeded; successfully redirected to /farmer dashboard and navigated advisor tabs."
                     else:
                         status = "Fail"
                         actual_result = f"Login failed to redirect. Current URL: {driver.current_url}"
@@ -93,6 +106,84 @@ def run_e2e_tests():
                         status = "Fail"
                         actual_result = "Failed to find login elements on page."
                         
+                elif tc["id"] == "TC-035": # Officer login and navigation check
+                    driver.get("http://localhost:5173/login")
+                    time.sleep(1)
+                    try:
+                        driver.execute_script("window.localStorage.clear(); window.sessionStorage.clear();")
+                        driver.delete_all_cookies()
+                    except Exception:
+                        pass
+                    driver.refresh()
+                    time.sleep(1)
+                    # Find role tabs
+                    role_buttons = driver.find_elements("css selector", "button")
+                    for btn in role_buttons:
+                        if "Officer" in btn.text:
+                            btn.click()
+                            time.sleep(0.5)
+                            break
+                    email_input = driver.find_element("css selector", "input[type='email']")
+                    pass_input = driver.find_element("css selector", "input[type='password']")
+                    submit_btn = driver.find_element("css selector", "button[type='submit']")
+                    email_input.clear()
+                    email_input.send_keys("officer@demo.com")
+                    pass_input.clear()
+                    pass_input.send_keys("password")
+                    submit_btn.click()
+                    time.sleep(3)
+                    
+                    # Verify redirection
+                    if "officer" in driver.current_url:
+                        status = "Pass"
+                        driver.get("http://localhost:5173/officer/farmers")
+                        time.sleep(1.5)
+                        driver.get("http://localhost:5173/officer/heatmap")
+                        time.sleep(1.5)
+                        actual_result = "Officer login succeeded; redirected to /officer and loaded heatmap successfully."
+                    else:
+                        status = "Fail"
+                        actual_result = f"Officer login failed to redirect. Current URL: {driver.current_url}"
+
+                elif tc["id"] == "TC-042": # Admin login and navigation check
+                    driver.get("http://localhost:5173/login")
+                    time.sleep(1)
+                    try:
+                        driver.execute_script("window.localStorage.clear(); window.sessionStorage.clear();")
+                        driver.delete_all_cookies()
+                    except Exception:
+                        pass
+                    driver.refresh()
+                    time.sleep(1)
+                    # Find role tabs
+                    role_buttons = driver.find_elements("css selector", "button")
+                    for btn in role_buttons:
+                        if "Admin" in btn.text:
+                            btn.click()
+                            time.sleep(0.5)
+                            break
+                    email_input = driver.find_element("css selector", "input[type='email']")
+                    pass_input = driver.find_element("css selector", "input[type='password']")
+                    submit_btn = driver.find_element("css selector", "button[type='submit']")
+                    email_input.clear()
+                    email_input.send_keys("admin@demo.com")
+                    pass_input.clear()
+                    pass_input.send_keys("password")
+                    submit_btn.click()
+                    time.sleep(3)
+                    
+                    # Verify redirection
+                    if "admin" in driver.current_url:
+                        status = "Pass"
+                        driver.get("http://localhost:5173/admin/officers")
+                        time.sleep(1.5)
+                        driver.get("http://localhost:5173/admin/health")
+                        time.sleep(1.5)
+                        actual_result = "Admin login succeeded; redirected to /admin and loaded system health stats successfully."
+                    else:
+                        status = "Fail"
+                        actual_result = f"Admin login failed to redirect. Current URL: {driver.current_url}"
+
                 elif tc["id"] == "TC-050": # Route protection check
                     driver.get("http://localhost:5173/login")
                     time.sleep(0.5)
