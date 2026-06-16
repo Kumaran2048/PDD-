@@ -23,3 +23,7 @@ venv/
 # IDE
 .vscode/
 .idea/
+
+# Reports
+*.xlsx
+~$*.xlsx

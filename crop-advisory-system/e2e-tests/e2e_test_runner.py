@@ -9,8 +9,37 @@ from openpyxl.utils import get_column_letter
 # Import test definitions
 from test_definitions import TEST_CASES
 
+class BackendLogReader:
+    def __init__(self, log_path="../backend.log"):
+        self.log_path = log_path
+        self.last_position = 0
+        if os.path.exists(self.log_path):
+            try:
+                self.last_position = os.path.getsize(self.log_path)
+            except Exception:
+                self.last_position = 0
+
+    def print_new_logs(self, test_id):
+        if not os.path.exists(self.log_path):
+            return
+        try:
+            current_size = os.path.getsize(self.log_path)
+            if current_size > self.last_position:
+                with open(self.log_path, "r", encoding="utf-8", errors="ignore") as f:
+                    f.seek(self.last_position)
+                    new_content = f.read().strip()
+                    if new_content:
+                        print(f"\n  [Backend Logs for {test_id}]:")
+                        for line in new_content.splitlines():
+                            print(f"    [Backend] {line}")
+                        print()
+            self.last_position = current_size
+        except Exception as e:
+            print(f"  [Warning] Failed to read backend logs: {e}")
+
 def run_e2e_tests():
     print("Initializing Selenium Webdriver...")
+    log_reader = BackendLogReader()
     results = []
     
     # We will simulate/execute the test runs.
@@ -53,7 +82,7 @@ def run_e2e_tests():
         status = "Pass"
         actual_result = "Feature functions as expected; layout holds alignment thresholds."
         
-        is_live = tc["id"] in ["TC-001", "TC-021", "TC-035", "TC-042", "TC-050"] and driver and frontend_running
+        is_live = tc["id"] in ["TC-001", "TC-021", "TC-023", "TC-035", "TC-042", "TC-050"] and driver and frontend_running
         mode_str = "LIVE (Selenium)" if is_live else "SIMULATED / STATIC"
         print(f"Running [{mode_str}] {tc['id']}: {tc['description']}")
         
@@ -86,24 +115,103 @@ def run_e2e_tests():
                     
                     print("  [Step 5] Clicking Sign In button...")
                     submit_btn.click()
-                    time.sleep(3)
                     
-                    print(f"  [Step 6] Current URL resolved: {driver.current_url}")
+                    print("  [Step 6] Waiting for redirect...")
+                    for i in range(12):
+                        print(f"    -> Loop {i}: URL={driver.current_url}")
+                        if "farmer" in driver.current_url:
+                            break
+                        time.sleep(0.5)
+                    
+                    print(f"  [Step 7] Current URL resolved: {driver.current_url}")
                     if "farmer" in driver.current_url:
                         status = "Pass"
-                        print("  [Step 7] Redirect verified. Navigating to Crops tab...")
+                        print("  [Step 8] Redirect verified. Navigating to Crops tab...")
                         driver.get("http://localhost:5173/farmer/crops")
                         time.sleep(1.5)
-                        print("  [Step 8] Navigating to Soil Advisor tab...")
+                        print("  [Step 9] Navigating to Soil Advisor tab...")
                         driver.get("http://localhost:5173/farmer/soil")
                         time.sleep(1.5)
-                        print("  [Step 9] Navigating to Expenses tab...")
+                        print("  [Step 10] Navigating to Expenses tab...")
                         driver.get("http://localhost:5173/farmer/expenses")
                         time.sleep(1.5)
                         actual_result = "Login succeeded; successfully redirected to /farmer dashboard and navigated advisor tabs."
                     else:
                         status = "Fail"
                         actual_result = f"Login failed to redirect. Current URL: {driver.current_url}"
+                
+                elif tc["id"] == "TC-023": # Registration positive check
+                    print("  [Step 1] Loading registration page http://localhost:5173/register...")
+                    driver.get("http://localhost:5173/register")
+                    time.sleep(1)
+                    print("  [Step 2] Clearing previous storage and browser session cookies...")
+                    try:
+                        driver.execute_script("window.localStorage.clear(); window.sessionStorage.clear();")
+                        driver.delete_all_cookies()
+                    except Exception:
+                        pass
+                    driver.refresh()
+                    time.sleep(1)
+                    
+                    print("  [Step 3] Locating registration input elements...")
+                    name_input = driver.find_element("css selector", "input[name='name']")
+                    phone_input = driver.find_element("css selector", "input[name='phone']")
+                    email_input = driver.find_element("css selector", "input[name='email']")
+                    pass_input = driver.find_element("css selector", "input[name='password']")
+                    state_select = driver.find_element("css selector", "select[name='state']")
+                    district_select = driver.find_element("css selector", "select[name='district']")
+                    submit_btn = driver.find_element("css selector", "button[type='submit']")
+                    
+                    print("  [Step 4] Typing new registration details (randomized email and phone for uniqueness)...")
+                    import random
+                    unique_id = int(time.time())
+                    test_email = f"farmer_test_{unique_id}@demo.com"
+                    random_phone = f"9{random.randint(100000000, 999999999)}"
+                    
+                    print(f"  -> Name entered: Test Farmer {unique_id}")
+                    name_input.send_keys(f"Test Farmer {unique_id}")
+                    
+                    print(f"  -> Phone entered: {random_phone}")
+                    phone_input.send_keys(random_phone)
+                    
+                    print(f"  -> Email entered: {test_email}")
+                    email_input.send_keys(test_email)
+                    
+                    print("  -> Password entered: password123")
+                    pass_input.send_keys("password123")
+                    
+                    print("  [Step 5] Selecting Region dropdowns via option clicks...")
+                    state_select.click()
+                    time.sleep(0.5)
+                    state_option = state_select.find_element("css selector", "option[value='Tamil Nadu']")
+                    state_option.click()
+                    time.sleep(1)
+                    
+                    district_select.click()
+                    time.sleep(0.5)
+                    district_option = district_select.find_element("css selector", "option[value='Coimbatore']")
+                    district_option.click()
+                    time.sleep(1)
+                    
+                    print("  [Step 6] Clicking 'Get Started' submit button...")
+                    submit_btn.click()
+                    
+                    print("  [Step 7] Waiting for redirect...")
+                    for i in range(12):
+                        print(f"    -> Loop {i}: URL={driver.current_url}")
+                        if "farmer" in driver.current_url:
+                            break
+                        time.sleep(0.5)
+                    
+                    print(f"  [Step 8] Current URL resolved: {driver.current_url}")
+                    if "farmer" in driver.current_url:
+                        status = "Pass"
+                        print("  [Step 9] Verification Pass: Farmer dashboard loaded successfully after signup redirect!")
+                        actual_result = f"Registration succeeded; new user {test_email} created and redirected to /farmer dashboard."
+                    else:
+                        status = "Fail"
+                        print("  [Step 9] Verification Fail: Did not redirect to dashboard.")
+                        actual_result = f"Registration failed to redirect to dashboard. Current URL: {driver.current_url}"
                 
                 elif tc["id"] == "TC-001": # Login UI check
                     print("  [Step 1] Opening login page to verify structure...")
@@ -135,36 +243,36 @@ def run_e2e_tests():
                     for btn in role_buttons:
                         if "Officer" in btn.text:
                             btn.click()
-                            time.sleep(0.5)
+                            time.sleep(1)
                             break
                             
-                    print("  [Step 4] Typing Officer credentials (officer@demo.com)...")
-                    email_input = driver.find_element("css selector", "input[type='email']")
-                    pass_input = driver.find_element("css selector", "input[type='password']")
+                    print("  [Step 4] Form credentials auto-populated by tab selection. Locating Submit button...")
                     submit_btn = driver.find_element("css selector", "button[type='submit']")
-                    email_input.clear()
-                    email_input.send_keys("officer@demo.com")
-                    pass_input.clear()
-                    pass_input.send_keys("password")
                     
                     print("  [Step 5] Submitting form...")
                     submit_btn.click()
-                    time.sleep(3)
                     
-                    print(f"  [Step 6] Current URL resolved: {driver.current_url}")
+                    print("  [Step 6] Waiting for redirect...")
+                    for i in range(12):
+                        print(f"    -> Loop {i}: URL={driver.current_url}")
+                        if "officer" in driver.current_url:
+                            break
+                        time.sleep(0.5)
+                    
+                    print(f"  [Step 7] Current URL resolved: {driver.current_url}")
                     if "officer" in driver.current_url:
                         status = "Pass"
-                        print("  [Step 7] Redirect verified. Navigating to Farmers List...")
+                        print("  [Step 8] Redirect verified. Navigating to Farmers List...")
                         driver.get("http://localhost:5173/officer/farmers")
                         time.sleep(1.5)
-                        print("  [Step 8] Navigating to Outbreak Heatmap...")
+                        print("  [Step 9] Navigating to Outbreak Heatmap...")
                         driver.get("http://localhost:5173/officer/heatmap")
                         time.sleep(1.5)
                         actual_result = "Officer login succeeded; redirected to /officer and loaded heatmap successfully."
                     else:
                         status = "Fail"
                         actual_result = f"Officer login failed to redirect. Current URL: {driver.current_url}"
-
+ 
                 elif tc["id"] == "TC-042": # Admin login and navigation check
                     print("  [Step 1] Loading login page http://localhost:5173/login...")
                     driver.get("http://localhost:5173/login")
@@ -183,29 +291,29 @@ def run_e2e_tests():
                     for btn in role_buttons:
                         if "Admin" in btn.text:
                             btn.click()
-                            time.sleep(0.5)
+                            time.sleep(1)
                             break
                             
-                    print("  [Step 4] Typing Admin credentials (admin@demo.com)...")
-                    email_input = driver.find_element("css selector", "input[type='email']")
-                    pass_input = driver.find_element("css selector", "input[type='password']")
+                    print("  [Step 4] Form credentials auto-populated by tab selection. Locating Submit button...")
                     submit_btn = driver.find_element("css selector", "button[type='submit']")
-                    email_input.clear()
-                    email_input.send_keys("admin@demo.com")
-                    pass_input.clear()
-                    pass_input.send_keys("password")
                     
                     print("  [Step 5] Submitting form...")
                     submit_btn.click()
-                    time.sleep(3)
                     
-                    print(f"  [Step 6] Current URL resolved: {driver.current_url}")
+                    print("  [Step 6] Waiting for redirect...")
+                    for i in range(12):
+                        print(f"    -> Loop {i}: URL={driver.current_url}")
+                        if "admin" in driver.current_url:
+                            break
+                        time.sleep(0.5)
+                    
+                    print(f"  [Step 7] Current URL resolved: {driver.current_url}")
                     if "admin" in driver.current_url:
                         status = "Pass"
-                        print("  [Step 7] Redirect verified. Navigating to Manage Officers page...")
+                        print("  [Step 8] Redirect verified. Navigating to Manage Officers page...")
                         driver.get("http://localhost:5173/admin/officers")
                         time.sleep(1.5)
-                        print("  [Step 8] Navigating to System Health page...")
+                        print("  [Step 9] Navigating to System Health page...")
                         driver.get("http://localhost:5173/admin/health")
                         time.sleep(1.5)
                         actual_result = "Admin login succeeded; redirected to /admin and loaded system health stats successfully."
@@ -260,6 +368,7 @@ def run_e2e_tests():
             actual_result = "Assertion Failed: File upload validator rejected valid png format."
             
         print(f"  -> Result: {status} | Actual: {actual_result}")
+        log_reader.print_new_logs(tc["id"])
         print("-" * 50)
             
         results.append({

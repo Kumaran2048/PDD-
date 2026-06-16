@@ -112,6 +112,30 @@ jobs:
         cd crop-advisory-system/e2e-tests
         python e2e_test_runner.py
 
+    - name: Dump Backend Server Logs
+      if: always()
+      run: |
+        echo "========================================================="
+        echo "                DETAILED BACKEND LOGS                    "
+        echo "========================================================="
+        if [ -f crop-advisory-system/backend.log ]; then
+          cat crop-advisory-system/backend.log
+        else
+          echo "backend.log not found"
+        fi
+
+    - name: Dump Frontend Server Logs
+      if: always()
+      run: |
+        echo "========================================================="
+        echo "                DETAILED FRONTEND LOGS                   "
+        echo "========================================================="
+        if [ -f crop-advisory-system/frontend.log ]; then
+          cat crop-advisory-system/frontend.log
+        else
+          echo "frontend.log not found"
+        fi
+
     - name: Upload Test Report Artifact
       uses: actions/upload-artifact@v4
       if: always()
