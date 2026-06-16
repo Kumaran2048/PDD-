@@ -1,0 +1,99 @@
+name: E2E Selenium Testing
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  e2e-test:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: sachshiv
+          MYSQL_DATABASE: cropadvisor
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+        cache: 'npm'
+        cache-dependency-path: crop-advisory-system/package-lock.json
+
+    - name: Install Dependencies
+      run: |
+        cd crop-advisory-system
+        npm install
+        npm run install:all
+
+    - name: Seed Database
+      env:
+        DB_HOST: 127.0.0.1
+        DB_PORT: 3306
+        DB_USER: root
+        DB_PASSWORD: sachshiv
+        DB_NAME: cropadvisor
+      run: |
+        cd crop-advisory-system/crop-advisory-backend/crop-advisory/server
+        node seedUsers.js
+        node seedExtra.js
+
+    - name: Start Backend and Frontend Dev Servers
+      run: |
+        cd crop-advisory-system
+        nohup npm run dev:backend > backend.log 2>&1 &
+        nohup npm run dev:frontend > frontend.log 2>&1 &
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    - name: Install Python Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install selenium webdriver-manager openpyxl
+
+    - name: Wait for Ports to be Ready
+      run: |
+        python -c "
+        import socket, time
+        for port in [5000, 5173]:
+            start_time = time.time()
+            while True:
+                try:
+                    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                    s.settimeout(1)
+                    s.connect(('127.0.0.1', port))
+                    s.close()
+                    print(f'Port {port} is open and ready.')
+                    break
+                except Exception:
+                    if time.time() - start_time > 60:
+                        raise TimeoutError(f'Timed out waiting for port {port}')
+                    print(f'Waiting for port {port}...')
+                    time.sleep(2)
+        "
+
+    - name: Run E2E Test Suite
+      run: |
+        cd crop-advisory-system/e2e-tests
+        python e2e_test_runner.py
+
+    - name: Upload Test Report Artifact
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: E2E-Selenium-Test-Report
+        path: crop-advisory-system/e2e-tests/E2E_Test_Report_CropAdvisory_*.xlsx
