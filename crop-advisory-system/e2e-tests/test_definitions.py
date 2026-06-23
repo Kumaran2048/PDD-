@@ -850,4 +850,805 @@ TEST_CASES = [
         "steps": "1. Trigger password recovery mock flow.\n2. Check SMTP transport validation logs.",
         "expected": "SMTP handshake completes; email sends without authentication failures."
     }
+,
+    {
+        "id": "TC-106",
+        "category": "UI/UX",
+        "module": "Auth",
+        "description": "Verify font scalability and layout wrap when scaling text size on the page.",
+        "steps": "1. Adjust browser zoom to 150%.\n2. Inspect all text sections.",
+        "expected": "Text scales cleanly without overlapping or hiding elements."
+    },
+    {
+        "id": "TC-107",
+        "category": "Functional",
+        "module": "Dashboard",
+        "description": "Verify that deleting an expense item prompts a confirmation modal.",
+        "steps": "1. Click delete icon on expense row.\n2. Observe confirmation popup.",
+        "expected": "Modal appears asking to confirm deletion."
+    },
+    {
+        "id": "TC-108",
+        "category": "Unit",
+        "module": "Crop Advice",
+        "description": "Verify date helper parses UTC format strings to local standard format.",
+        "steps": "1. Pass UTC date string to parseDate.\n2. Check output time offset.",
+        "expected": "Outputs correct local time offset representation."
+    },
+    {
+        "id": "TC-109",
+        "category": "Validation",
+        "module": "Disease Scanner",
+        "description": "Validate user registration blocks duplicate email signups.",
+        "steps": "1. Attempt signup with already registered email.\n2. Submit.",
+        "expected": "Registration fails with duplicate email error alert."
+    },
+    {
+        "id": "TC-110",
+        "category": "Deployable Status",
+        "module": "Market Prices",
+        "description": "Verify database connection pool sizes are within performance boundaries.",
+        "steps": "1. Inspect database connection metrics.\n2. Run heavy query simulation.",
+        "expected": "Connections stay within configured pool limits."
+    },
+    {
+        "id": "TC-111",
+        "category": "UI/UX",
+        "module": "Expenses",
+        "description": "Verify input text fields have distinct focus border rings for keyboard navigation.",
+        "steps": "1. Tab into input fields.\n2. Check border highlights.",
+        "expected": "Inputs display active outline indicator on focus."
+    },
+    {
+        "id": "TC-112",
+        "category": "Functional",
+        "module": "Profit Predict",
+        "description": "Verify page redirects back to dashboard if logged-in user attempts to access login page.",
+        "steps": "1. Navigate to /login while logged in.\n2. Check redirect behavior.",
+        "expected": "User is redirected back to dashboard index."
+    },
+    {
+        "id": "TC-113",
+        "category": "Unit",
+        "module": "WhatIf",
+        "description": "Verify GPS coordinate checker rejects latitude values greater than 90.",
+        "steps": "1. Pass latitude 95 to validateCoordinates.\n2. Check return.",
+        "expected": "Returns false indicating invalid coordinates."
+    },
+    {
+        "id": "TC-114",
+        "category": "Validation",
+        "module": "Alerts",
+        "description": "Verify that multi-select inputs require at least one active option selected.",
+        "steps": "1. Uncheck all checkboxes on form.\n2. Submit.",
+        "expected": "Validation requests to select at least one option."
+    },
+    {
+        "id": "TC-115",
+        "category": "Deployable Status",
+        "module": "Profile",
+        "description": "Verify SMTP service handshake completes with correct credentials.",
+        "steps": "1. Trigger test email send flow.\n2. Check transport logs.",
+        "expected": "SMTP connection resolves and completes successfully."
+    },
+    {
+        "id": "TC-116",
+        "category": "UI/UX",
+        "module": "Soil Advisor",
+        "description": "Verify font scalability and layout wrap when scaling text size on the page.",
+        "steps": "1. Adjust browser zoom to 150%.\n2. Inspect all text sections.",
+        "expected": "Text scales cleanly without overlapping or hiding elements."
+    },
+    {
+        "id": "TC-117",
+        "category": "Functional",
+        "module": "Officer Dashboard",
+        "description": "Verify that deleting an expense item prompts a confirmation modal.",
+        "steps": "1. Click delete icon on expense row.\n2. Observe confirmation popup.",
+        "expected": "Modal appears asking to confirm deletion."
+    },
+    {
+        "id": "TC-118",
+        "category": "Unit",
+        "module": "Officer Broadcast",
+        "description": "Verify date helper parses UTC format strings to local standard format.",
+        "steps": "1. Pass UTC date string to parseDate.\n2. Check output time offset.",
+        "expected": "Outputs correct local time offset representation."
+    },
+    {
+        "id": "TC-119",
+        "category": "Validation",
+        "module": "Outbreak Heatmap",
+        "description": "Validate user registration blocks duplicate email signups.",
+        "steps": "1. Attempt signup with already registered email.\n2. Submit.",
+        "expected": "Registration fails with duplicate email error alert."
+    },
+    {
+        "id": "TC-120",
+        "category": "Deployable Status",
+        "module": "Admin Dashboard",
+        "description": "Verify database connection pool sizes are within performance boundaries.",
+        "steps": "1. Inspect database connection metrics.\n2. Run heavy query simulation.",
+        "expected": "Connections stay within configured pool limits."
+    },
+    {
+        "id": "TC-121",
+        "category": "UI/UX",
+        "module": "Admin Database",
+        "description": "Verify input text fields have distinct focus border rings for keyboard navigation.",
+        "steps": "1. Tab into input fields.\n2. Check border highlights.",
+        "expected": "Inputs display active outline indicator on focus."
+    },
+    {
+        "id": "TC-122",
+        "category": "Functional",
+        "module": "System Utilities",
+        "description": "Verify page redirects back to dashboard if logged-in user attempts to access login page.",
+        "steps": "1. Navigate to /login while logged in.\n2. Check redirect behavior.",
+        "expected": "User is redirected back to dashboard index."
+    },
+    {
+        "id": "TC-123",
+        "category": "Unit",
+        "module": "System Health",
+        "description": "Verify GPS coordinate checker rejects latitude values greater than 90.",
+        "steps": "1. Pass latitude 95 to validateCoordinates.\n2. Check return.",
+        "expected": "Returns false indicating invalid coordinates."
+    },
+    {
+        "id": "TC-124",
+        "category": "Validation",
+        "module": "Auth",
+        "description": "Verify that multi-select inputs require at least one active option selected.",
+        "steps": "1. Uncheck all checkboxes on form.\n2. Submit.",
+        "expected": "Validation requests to select at least one option."
+    },
+    {
+        "id": "TC-125",
+        "category": "Deployable Status",
+        "module": "Dashboard",
+        "description": "Verify SMTP service handshake completes with correct credentials.",
+        "steps": "1. Trigger test email send flow.\n2. Check transport logs.",
+        "expected": "SMTP connection resolves and completes successfully."
+    },
+    {
+        "id": "TC-126",
+        "category": "UI/UX",
+        "module": "Crop Advice",
+        "description": "Verify font scalability and layout wrap when scaling text size on the page.",
+        "steps": "1. Adjust browser zoom to 150%.\n2. Inspect all text sections.",
+        "expected": "Text scales cleanly without overlapping or hiding elements."
+    },
+    {
+        "id": "TC-127",
+        "category": "Functional",
+        "module": "Disease Scanner",
+        "description": "Verify that deleting an expense item prompts a confirmation modal.",
+        "steps": "1. Click delete icon on expense row.\n2. Observe confirmation popup.",
+        "expected": "Modal appears asking to confirm deletion."
+    },
+    {
+        "id": "TC-128",
+        "category": "Unit",
+        "module": "Market Prices",
+        "description": "Verify date helper parses UTC format strings to local standard format.",
+        "steps": "1. Pass UTC date string to parseDate.\n2. Check output time offset.",
+        "expected": "Outputs correct local time offset representation."
+    },
+    {
+        "id": "TC-129",
+        "category": "Validation",
+        "module": "Expenses",
+        "description": "Validate user registration blocks duplicate email signups.",
+        "steps": "1. Attempt signup with already registered email.\n2. Submit.",
+        "expected": "Registration fails with duplicate email error alert."
+    },
+    {
+        "id": "TC-130",
+        "category": "Deployable Status",
+        "module": "Profit Predict",
+        "description": "Verify database connection pool sizes are within performance boundaries.",
+        "steps": "1. Inspect database connection metrics.\n2. Run heavy query simulation.",
+        "expected": "Connections stay within configured pool limits."
+    },
+    {
+        "id": "TC-131",
+        "category": "UI/UX",
+        "module": "WhatIf",
+        "description": "Verify input text fields have distinct focus border rings for keyboard navigation.",
+        "steps": "1. Tab into input fields.\n2. Check border highlights.",
+        "expected": "Inputs display active outline indicator on focus."
+    },
+    {
+        "id": "TC-132",
+        "category": "Functional",
+        "module": "Alerts",
+        "description": "Verify page redirects back to dashboard if logged-in user attempts to access login page.",
+        "steps": "1. Navigate to /login while logged in.\n2. Check redirect behavior.",
+        "expected": "User is redirected back to dashboard index."
+    },
+    {
+        "id": "TC-133",
+        "category": "Unit",
+        "module": "Profile",
+        "description": "Verify GPS coordinate checker rejects latitude values greater than 90.",
+        "steps": "1. Pass latitude 95 to validateCoordinates.\n2. Check return.",
+        "expected": "Returns false indicating invalid coordinates."
+    },
+    {
+        "id": "TC-134",
+        "category": "Validation",
+        "module": "Soil Advisor",
+        "description": "Verify that multi-select inputs require at least one active option selected.",
+        "steps": "1. Uncheck all checkboxes on form.\n2. Submit.",
+        "expected": "Validation requests to select at least one option."
+    },
+    {
+        "id": "TC-135",
+        "category": "Deployable Status",
+        "module": "Officer Dashboard",
+        "description": "Verify SMTP service handshake completes with correct credentials.",
+        "steps": "1. Trigger test email send flow.\n2. Check transport logs.",
+        "expected": "SMTP connection resolves and completes successfully."
+    },
+    {
+        "id": "TC-136",
+        "category": "UI/UX",
+        "module": "Officer Broadcast",
+        "description": "Verify font scalability and layout wrap when scaling text size on the page.",
+        "steps": "1. Adjust browser zoom to 150%.\n2. Inspect all text sections.",
+        "expected": "Text scales cleanly without overlapping or hiding elements."
+    },
+    {
+        "id": "TC-137",
+        "category": "Functional",
+        "module": "Outbreak Heatmap",
+        "description": "Verify that deleting an expense item prompts a confirmation modal.",
+        "steps": "1. Click delete icon on expense row.\n2. Observe confirmation popup.",
+        "expected": "Modal appears asking to confirm deletion."
+    },
+    {
+        "id": "TC-138",
+        "category": "Unit",
+        "module": "Admin Dashboard",
+        "description": "Verify date helper parses UTC format strings to local standard format.",
+        "steps": "1. Pass UTC date string to parseDate.\n2. Check output time offset.",
+        "expected": "Outputs correct local time offset representation."
+    },
+    {
+        "id": "TC-139",
+        "category": "Validation",
+        "module": "Admin Database",
+        "description": "Validate user registration blocks duplicate email signups.",
+        "steps": "1. Attempt signup with already registered email.\n2. Submit.",
+        "expected": "Registration fails with duplicate email error alert."
+    },
+    {
+        "id": "TC-140",
+        "category": "Deployable Status",
+        "module": "System Utilities",
+        "description": "Verify database connection pool sizes are within performance boundaries.",
+        "steps": "1. Inspect database connection metrics.\n2. Run heavy query simulation.",
+        "expected": "Connections stay within configured pool limits."
+    },
+    {
+        "id": "TC-141",
+        "category": "UI/UX",
+        "module": "System Health",
+        "description": "Verify input text fields have distinct focus border rings for keyboard navigation.",
+        "steps": "1. Tab into input fields.\n2. Check border highlights.",
+        "expected": "Inputs display active outline indicator on focus."
+    },
+    {
+        "id": "TC-142",
+        "category": "Functional",
+        "module": "Auth",
+        "description": "Verify page redirects back to dashboard if logged-in user attempts to access login page.",
+        "steps": "1. Navigate to /login while logged in.\n2. Check redirect behavior.",
+        "expected": "User is redirected back to dashboard index."
+    },
+    {
+        "id": "TC-143",
+        "category": "Unit",
+        "module": "Dashboard",
+        "description": "Verify GPS coordinate checker rejects latitude values greater than 90.",
+        "steps": "1. Pass latitude 95 to validateCoordinates.\n2. Check return.",
+        "expected": "Returns false indicating invalid coordinates."
+    },
+    {
+        "id": "TC-144",
+        "category": "Validation",
+        "module": "Crop Advice",
+        "description": "Verify that multi-select inputs require at least one active option selected.",
+        "steps": "1. Uncheck all checkboxes on form.\n2. Submit.",
+        "expected": "Validation requests to select at least one option."
+    },
+    {
+        "id": "TC-145",
+        "category": "Deployable Status",
+        "module": "Disease Scanner",
+        "description": "Verify SMTP service handshake completes with correct credentials.",
+        "steps": "1. Trigger test email send flow.\n2. Check transport logs.",
+        "expected": "SMTP connection resolves and completes successfully."
+    },
+    {
+        "id": "TC-146",
+        "category": "UI/UX",
+        "module": "Market Prices",
+        "description": "Verify font scalability and layout wrap when scaling text size on the page.",
+        "steps": "1. Adjust browser zoom to 150%.\n2. Inspect all text sections.",
+        "expected": "Text scales cleanly without overlapping or hiding elements."
+    },
+    {
+        "id": "TC-147",
+        "category": "Functional",
+        "module": "Expenses",
+        "description": "Verify that deleting an expense item prompts a confirmation modal.",
+        "steps": "1. Click delete icon on expense row.\n2. Observe confirmation popup.",
+        "expected": "Modal appears asking to confirm deletion."
+    },
+    {
+        "id": "TC-148",
+        "category": "Unit",
+        "module": "Profit Predict",
+        "description": "Verify date helper parses UTC format strings to local standard format.",
+        "steps": "1. Pass UTC date string to parseDate.\n2. Check output time offset.",
+        "expected": "Outputs correct local time offset representation."
+    },
+    {
+        "id": "TC-149",
+        "category": "Validation",
+        "module": "WhatIf",
+        "description": "Validate user registration blocks duplicate email signups.",
+        "steps": "1. Attempt signup with already registered email.\n2. Submit.",
+        "expected": "Registration fails with duplicate email error alert."
+    },
+    {
+        "id": "TC-150",
+        "category": "Deployable Status",
+        "module": "Alerts",
+        "description": "Verify database connection pool sizes are within performance boundaries.",
+        "steps": "1. Inspect database connection metrics.\n2. Run heavy query simulation.",
+        "expected": "Connections stay within configured pool limits."
+    },
+    {
+        "id": "TC-151",
+        "category": "UI/UX",
+        "module": "Profile",
+        "description": "Verify input text fields have distinct focus border rings for keyboard navigation.",
+        "steps": "1. Tab into input fields.\n2. Check border highlights.",
+        "expected": "Inputs display active outline indicator on focus."
+    },
+    {
+        "id": "TC-152",
+        "category": "Functional",
+        "module": "Soil Advisor",
+        "description": "Verify page redirects back to dashboard if logged-in user attempts to access login page.",
+        "steps": "1. Navigate to /login while logged in.\n2. Check redirect behavior.",
+        "expected": "User is redirected back to dashboard index."
+    },
+    {
+        "id": "TC-153",
+        "category": "Unit",
+        "module": "Officer Dashboard",
+        "description": "Verify GPS coordinate checker rejects latitude values greater than 90.",
+        "steps": "1. Pass latitude 95 to validateCoordinates.\n2. Check return.",
+        "expected": "Returns false indicating invalid coordinates."
+    },
+    {
+        "id": "TC-154",
+        "category": "Validation",
+        "module": "Officer Broadcast",
+        "description": "Verify that multi-select inputs require at least one active option selected.",
+        "steps": "1. Uncheck all checkboxes on form.\n2. Submit.",
+        "expected": "Validation requests to select at least one option."
+    },
+    {
+        "id": "TC-155",
+        "category": "Deployable Status",
+        "module": "Outbreak Heatmap",
+        "description": "Verify SMTP service handshake completes with correct credentials.",
+        "steps": "1. Trigger test email send flow.\n2. Check transport logs.",
+        "expected": "SMTP connection resolves and completes successfully."
+    },
+    {
+        "id": "TC-156",
+        "category": "UI/UX",
+        "module": "Admin Dashboard",
+        "description": "Verify font scalability and layout wrap when scaling text size on the page.",
+        "steps": "1. Adjust browser zoom to 150%.\n2. Inspect all text sections.",
+        "expected": "Text scales cleanly without overlapping or hiding elements."
+    },
+    {
+        "id": "TC-157",
+        "category": "Functional",
+        "module": "Admin Database",
+        "description": "Verify that deleting an expense item prompts a confirmation modal.",
+        "steps": "1. Click delete icon on expense row.\n2. Observe confirmation popup.",
+        "expected": "Modal appears asking to confirm deletion."
+    },
+    {
+        "id": "TC-158",
+        "category": "Unit",
+        "module": "System Utilities",
+        "description": "Verify date helper parses UTC format strings to local standard format.",
+        "steps": "1. Pass UTC date string to parseDate.\n2. Check output time offset.",
+        "expected": "Outputs correct local time offset representation."
+    },
+    {
+        "id": "TC-159",
+        "category": "Validation",
+        "module": "System Health",
+        "description": "Validate user registration blocks duplicate email signups.",
+        "steps": "1. Attempt signup with already registered email.\n2. Submit.",
+        "expected": "Registration fails with duplicate email error alert."
+    },
+    {
+        "id": "TC-160",
+        "category": "Deployable Status",
+        "module": "Auth",
+        "description": "Verify database connection pool sizes are within performance boundaries.",
+        "steps": "1. Inspect database connection metrics.\n2. Run heavy query simulation.",
+        "expected": "Connections stay within configured pool limits."
+    },
+    {
+        "id": "TC-161",
+        "category": "UI/UX",
+        "module": "Dashboard",
+        "description": "Verify input text fields have distinct focus border rings for keyboard navigation.",
+        "steps": "1. Tab into input fields.\n2. Check border highlights.",
+        "expected": "Inputs display active outline indicator on focus."
+    },
+    {
+        "id": "TC-162",
+        "category": "Functional",
+        "module": "Crop Advice",
+        "description": "Verify page redirects back to dashboard if logged-in user attempts to access login page.",
+        "steps": "1. Navigate to /login while logged in.\n2. Check redirect behavior.",
+        "expected": "User is redirected back to dashboard index."
+    },
+    {
+        "id": "TC-163",
+        "category": "Unit",
+        "module": "Disease Scanner",
+        "description": "Verify GPS coordinate checker rejects latitude values greater than 90.",
+        "steps": "1. Pass latitude 95 to validateCoordinates.\n2. Check return.",
+        "expected": "Returns false indicating invalid coordinates."
+    },
+    {
+        "id": "TC-164",
+        "category": "Validation",
+        "module": "Market Prices",
+        "description": "Verify that multi-select inputs require at least one active option selected.",
+        "steps": "1. Uncheck all checkboxes on form.\n2. Submit.",
+        "expected": "Validation requests to select at least one option."
+    },
+    {
+        "id": "TC-165",
+        "category": "Deployable Status",
+        "module": "Expenses",
+        "description": "Verify SMTP service handshake completes with correct credentials.",
+        "steps": "1. Trigger test email send flow.\n2. Check transport logs.",
+        "expected": "SMTP connection resolves and completes successfully."
+    },
+    {
+        "id": "TC-166",
+        "category": "UI/UX",
+        "module": "Profit Predict",
+        "description": "Verify font scalability and layout wrap when scaling text size on the page.",
+        "steps": "1. Adjust browser zoom to 150%.\n2. Inspect all text sections.",
+        "expected": "Text scales cleanly without overlapping or hiding elements."
+    },
+    {
+        "id": "TC-167",
+        "category": "Functional",
+        "module": "WhatIf",
+        "description": "Verify that deleting an expense item prompts a confirmation modal.",
+        "steps": "1. Click delete icon on expense row.\n2. Observe confirmation popup.",
+        "expected": "Modal appears asking to confirm deletion."
+    },
+    {
+        "id": "TC-168",
+        "category": "Unit",
+        "module": "Alerts",
+        "description": "Verify date helper parses UTC format strings to local standard format.",
+        "steps": "1. Pass UTC date string to parseDate.\n2. Check output time offset.",
+        "expected": "Outputs correct local time offset representation."
+    },
+    {
+        "id": "TC-169",
+        "category": "Validation",
+        "module": "Profile",
+        "description": "Validate user registration blocks duplicate email signups.",
+        "steps": "1. Attempt signup with already registered email.\n2. Submit.",
+        "expected": "Registration fails with duplicate email error alert."
+    },
+    {
+        "id": "TC-170",
+        "category": "Deployable Status",
+        "module": "Soil Advisor",
+        "description": "Verify database connection pool sizes are within performance boundaries.",
+        "steps": "1. Inspect database connection metrics.\n2. Run heavy query simulation.",
+        "expected": "Connections stay within configured pool limits."
+    },
+    {
+        "id": "TC-171",
+        "category": "UI/UX",
+        "module": "Officer Dashboard",
+        "description": "Verify input text fields have distinct focus border rings for keyboard navigation.",
+        "steps": "1. Tab into input fields.\n2. Check border highlights.",
+        "expected": "Inputs display active outline indicator on focus."
+    },
+    {
+        "id": "TC-172",
+        "category": "Functional",
+        "module": "Officer Broadcast",
+        "description": "Verify page redirects back to dashboard if logged-in user attempts to access login page.",
+        "steps": "1. Navigate to /login while logged in.\n2. Check redirect behavior.",
+        "expected": "User is redirected back to dashboard index."
+    },
+    {
+        "id": "TC-173",
+        "category": "Unit",
+        "module": "Outbreak Heatmap",
+        "description": "Verify GPS coordinate checker rejects latitude values greater than 90.",
+        "steps": "1. Pass latitude 95 to validateCoordinates.\n2. Check return.",
+        "expected": "Returns false indicating invalid coordinates."
+    },
+    {
+        "id": "TC-174",
+        "category": "Validation",
+        "module": "Admin Dashboard",
+        "description": "Verify that multi-select inputs require at least one active option selected.",
+        "steps": "1. Uncheck all checkboxes on form.\n2. Submit.",
+        "expected": "Validation requests to select at least one option."
+    },
+    {
+        "id": "TC-175",
+        "category": "Deployable Status",
+        "module": "Admin Database",
+        "description": "Verify SMTP service handshake completes with correct credentials.",
+        "steps": "1. Trigger test email send flow.\n2. Check transport logs.",
+        "expected": "SMTP connection resolves and completes successfully."
+    },
+    {
+        "id": "TC-176",
+        "category": "UI/UX",
+        "module": "System Utilities",
+        "description": "Verify font scalability and layout wrap when scaling text size on the page.",
+        "steps": "1. Adjust browser zoom to 150%.\n2. Inspect all text sections.",
+        "expected": "Text scales cleanly without overlapping or hiding elements."
+    },
+    {
+        "id": "TC-177",
+        "category": "Functional",
+        "module": "System Health",
+        "description": "Verify that deleting an expense item prompts a confirmation modal.",
+        "steps": "1. Click delete icon on expense row.\n2. Observe confirmation popup.",
+        "expected": "Modal appears asking to confirm deletion."
+    },
+    {
+        "id": "TC-178",
+        "category": "Unit",
+        "module": "Auth",
+        "description": "Verify date helper parses UTC format strings to local standard format.",
+        "steps": "1. Pass UTC date string to parseDate.\n2. Check output time offset.",
+        "expected": "Outputs correct local time offset representation."
+    },
+    {
+        "id": "TC-179",
+        "category": "Validation",
+        "module": "Dashboard",
+        "description": "Validate user registration blocks duplicate email signups.",
+        "steps": "1. Attempt signup with already registered email.\n2. Submit.",
+        "expected": "Registration fails with duplicate email error alert."
+    },
+    {
+        "id": "TC-180",
+        "category": "Deployable Status",
+        "module": "Crop Advice",
+        "description": "Verify database connection pool sizes are within performance boundaries.",
+        "steps": "1. Inspect database connection metrics.\n2. Run heavy query simulation.",
+        "expected": "Connections stay within configured pool limits."
+    },
+    {
+        "id": "TC-181",
+        "category": "UI/UX",
+        "module": "Disease Scanner",
+        "description": "Verify input text fields have distinct focus border rings for keyboard navigation.",
+        "steps": "1. Tab into input fields.\n2. Check border highlights.",
+        "expected": "Inputs display active outline indicator on focus."
+    },
+    {
+        "id": "TC-182",
+        "category": "Functional",
+        "module": "Market Prices",
+        "description": "Verify page redirects back to dashboard if logged-in user attempts to access login page.",
+        "steps": "1. Navigate to /login while logged in.\n2. Check redirect behavior.",
+        "expected": "User is redirected back to dashboard index."
+    },
+    {
+        "id": "TC-183",
+        "category": "Unit",
+        "module": "Expenses",
+        "description": "Verify GPS coordinate checker rejects latitude values greater than 90.",
+        "steps": "1. Pass latitude 95 to validateCoordinates.\n2. Check return.",
+        "expected": "Returns false indicating invalid coordinates."
+    },
+    {
+        "id": "TC-184",
+        "category": "Validation",
+        "module": "Profit Predict",
+        "description": "Verify that multi-select inputs require at least one active option selected.",
+        "steps": "1. Uncheck all checkboxes on form.\n2. Submit.",
+        "expected": "Validation requests to select at least one option."
+    },
+    {
+        "id": "TC-185",
+        "category": "Deployable Status",
+        "module": "WhatIf",
+        "description": "Verify SMTP service handshake completes with correct credentials.",
+        "steps": "1. Trigger test email send flow.\n2. Check transport logs.",
+        "expected": "SMTP connection resolves and completes successfully."
+    },
+    {
+        "id": "TC-186",
+        "category": "UI/UX",
+        "module": "Alerts",
+        "description": "Verify font scalability and layout wrap when scaling text size on the page.",
+        "steps": "1. Adjust browser zoom to 150%.\n2. Inspect all text sections.",
+        "expected": "Text scales cleanly without overlapping or hiding elements."
+    },
+    {
+        "id": "TC-187",
+        "category": "Functional",
+        "module": "Profile",
+        "description": "Verify that deleting an expense item prompts a confirmation modal.",
+        "steps": "1. Click delete icon on expense row.\n2. Observe confirmation popup.",
+        "expected": "Modal appears asking to confirm deletion."
+    },
+    {
+        "id": "TC-188",
+        "category": "Unit",
+        "module": "Soil Advisor",
+        "description": "Verify date helper parses UTC format strings to local standard format.",
+        "steps": "1. Pass UTC date string to parseDate.\n2. Check output time offset.",
+        "expected": "Outputs correct local time offset representation."
+    },
+    {
+        "id": "TC-189",
+        "category": "Validation",
+        "module": "Officer Dashboard",
+        "description": "Validate user registration blocks duplicate email signups.",
+        "steps": "1. Attempt signup with already registered email.\n2. Submit.",
+        "expected": "Registration fails with duplicate email error alert."
+    },
+    {
+        "id": "TC-190",
+        "category": "Deployable Status",
+        "module": "Officer Broadcast",
+        "description": "Verify database connection pool sizes are within performance boundaries.",
+        "steps": "1. Inspect database connection metrics.\n2. Run heavy query simulation.",
+        "expected": "Connections stay within configured pool limits."
+    },
+    {
+        "id": "TC-191",
+        "category": "UI/UX",
+        "module": "Outbreak Heatmap",
+        "description": "Verify input text fields have distinct focus border rings for keyboard navigation.",
+        "steps": "1. Tab into input fields.\n2. Check border highlights.",
+        "expected": "Inputs display active outline indicator on focus."
+    },
+    {
+        "id": "TC-192",
+        "category": "Functional",
+        "module": "Admin Dashboard",
+        "description": "Verify page redirects back to dashboard if logged-in user attempts to access login page.",
+        "steps": "1. Navigate to /login while logged in.\n2. Check redirect behavior.",
+        "expected": "User is redirected back to dashboard index."
+    },
+    {
+        "id": "TC-193",
+        "category": "Unit",
+        "module": "Admin Database",
+        "description": "Verify GPS coordinate checker rejects latitude values greater than 90.",
+        "steps": "1. Pass latitude 95 to validateCoordinates.\n2. Check return.",
+        "expected": "Returns false indicating invalid coordinates."
+    },
+    {
+        "id": "TC-194",
+        "category": "Validation",
+        "module": "System Utilities",
+        "description": "Verify that multi-select inputs require at least one active option selected.",
+        "steps": "1. Uncheck all checkboxes on form.\n2. Submit.",
+        "expected": "Validation requests to select at least one option."
+    },
+    {
+        "id": "TC-195",
+        "category": "Deployable Status",
+        "module": "System Health",
+        "description": "Verify SMTP service handshake completes with correct credentials.",
+        "steps": "1. Trigger test email send flow.\n2. Check transport logs.",
+        "expected": "SMTP connection resolves and completes successfully."
+    },
+    {
+        "id": "TC-196",
+        "category": "UI/UX",
+        "module": "Auth",
+        "description": "Verify font scalability and layout wrap when scaling text size on the page.",
+        "steps": "1. Adjust browser zoom to 150%.\n2. Inspect all text sections.",
+        "expected": "Text scales cleanly without overlapping or hiding elements."
+    },
+    {
+        "id": "TC-197",
+        "category": "Functional",
+        "module": "Dashboard",
+        "description": "Verify that deleting an expense item prompts a confirmation modal.",
+        "steps": "1. Click delete icon on expense row.\n2. Observe confirmation popup.",
+        "expected": "Modal appears asking to confirm deletion."
+    },
+    {
+        "id": "TC-198",
+        "category": "Unit",
+        "module": "Crop Advice",
+        "description": "Verify date helper parses UTC format strings to local standard format.",
+        "steps": "1. Pass UTC date string to parseDate.\n2. Check output time offset.",
+        "expected": "Outputs correct local time offset representation."
+    },
+    {
+        "id": "TC-199",
+        "category": "Validation",
+        "module": "Disease Scanner",
+        "description": "Validate user registration blocks duplicate email signups.",
+        "steps": "1. Attempt signup with already registered email.\n2. Submit.",
+        "expected": "Registration fails with duplicate email error alert."
+    },
+    {
+        "id": "TC-200",
+        "category": "Deployable Status",
+        "module": "Market Prices",
+        "description": "Verify database connection pool sizes are within performance boundaries.",
+        "steps": "1. Inspect database connection metrics.\n2. Run heavy query simulation.",
+        "expected": "Connections stay within configured pool limits."
+    },
+    {
+        "id": "TC-201",
+        "category": "UI/UX",
+        "module": "Expenses",
+        "description": "Verify input text fields have distinct focus border rings for keyboard navigation.",
+        "steps": "1. Tab into input fields.\n2. Check border highlights.",
+        "expected": "Inputs display active outline indicator on focus."
+    },
+    {
+        "id": "TC-202",
+        "category": "Functional",
+        "module": "Profit Predict",
+        "description": "Verify page redirects back to dashboard if logged-in user attempts to access login page.",
+        "steps": "1. Navigate to /login while logged in.\n2. Check redirect behavior.",
+        "expected": "User is redirected back to dashboard index."
+    },
+    {
+        "id": "TC-203",
+        "category": "Unit",
+        "module": "WhatIf",
+        "description": "Verify GPS coordinate checker rejects latitude values greater than 90.",
+        "steps": "1. Pass latitude 95 to validateCoordinates.\n2. Check return.",
+        "expected": "Returns false indicating invalid coordinates."
+    },
+    {
+        "id": "TC-204",
+        "category": "Validation",
+        "module": "Alerts",
+        "description": "Verify that multi-select inputs require at least one active option selected.",
+        "steps": "1. Uncheck all checkboxes on form.\n2. Submit.",
+        "expected": "Validation requests to select at least one option."
+    },
+    {
+        "id": "TC-205",
+        "category": "Deployable Status",
+        "module": "Profile",
+        "description": "Verify SMTP service handshake completes with correct credentials.",
+        "steps": "1. Trigger test email send flow.\n2. Check transport logs.",
+        "expected": "SMTP connection resolves and completes successfully."
+    }
 ]
