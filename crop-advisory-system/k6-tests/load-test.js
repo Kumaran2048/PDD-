@@ -64,11 +64,11 @@ export default function (data) {
       'auth: current user role is farmer': (r) => r.json() && r.json().role === 'farmer',
     });
 
-    const resProfile = http.get(`${BASE_URL}/api/farm`, { headers: authHeaders });
+    const resProfile = http.get(`${BASE_URL}/api/farm/profile`, { headers: authHeaders });
     check(resProfile, {
       'farm_profile: retrieve profile status is 200': (r) => r.status === 200,
-      'farm_profile: land size is defined': (r) => r.json() && r.json().landSize !== undefined,
-      'farm_profile: soil type is Loamy Soil': (r) => r.json() && r.json().soilType === 'Loamy Soil',
+      'farm_profile: land size is defined': (r) => r.json() && r.json().profile && r.json().profile.landSize !== undefined,
+      'farm_profile: soil type is Loamy Soil': (r) => r.json() && r.json().profile && r.json().profile.soilType === 'Loamy Soil',
     });
 
     const updatePayload = JSON.stringify({
@@ -79,7 +79,7 @@ export default function (data) {
       district: 'Nashik',
       state: 'Maharashtra',
     });
-    const resUpdate = http.put(`${BASE_URL}/api/farm`, updatePayload, { headers: authHeaders });
+    const resUpdate = http.post(`${BASE_URL}/api/farm/profile`, updatePayload, { headers: authHeaders });
     check(resUpdate, {
       'farm_profile: update profile status is 200': (r) => r.status === 200,
       'farm_profile: updated village matches': (r) => r.json() && r.json().profile && r.json().profile.village === 'Khed-Updated',
