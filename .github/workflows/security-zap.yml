@@ -103,7 +103,7 @@ jobs:
 
     - name: Pull OWASP ZAP Docker Image
       run: |
-        docker pull zaproxy/zap-stable:latest
+        docker pull -q zaproxy/zap-stable:latest
 
     - name: Run OWASP ZAP Baseline Scan
       run: |
