@@ -107,6 +107,11 @@ jobs:
                     time.sleep(2)
         "
 
+    - name: Run K6 API Load Tests
+      uses: grafana/k6-action@v0.3.1
+      with:
+        filename: crop-advisory-system/k6-tests/load-test.js
+
     - name: Run E2E Test Suite (Python)
       run: |
         cd crop-advisory-system/e2e-tests
