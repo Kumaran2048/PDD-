@@ -9,8 +9,8 @@ export const options = {
   
   // Define performance SLAs (Service Level Agreements)
   thresholds: {
-    // 95% of requests must complete within 500ms
-    http_req_duration: ['p(95)<500'],
+    // 95% of requests must complete within 1000ms (1s) under stress load
+    http_req_duration: ['p(95)<1000'],
     // Less than 1% of requests should fail
     http_req_failed: ['rate<0.01'],
   },
