@@ -3,6 +3,8 @@ const dotenv = require("dotenv");
 const Crop = require("./models/Crop");
 const GovernmentScheme = require("./models/GovernmentScheme");
 const MarketPrice = require("./models/MarketPrice");
+const User = require("./models/User");
+const FarmProfile = require("./models/FarmProfile");
 
 dotenv.config();
 
@@ -87,6 +89,25 @@ const seedExtraData = async () => {
       });
     }
     await MarketPrice.insertMany(prices);
+
+    // 4. Seed Farm Profile for the Demo Farmer
+    const farmer = await User.findOne({ email: "farmer@demo.com" });
+    const tomato = await Crop.findOne({ name: "Tomato" });
+    if (farmer) {
+      // Clear existing profile if any
+      await FarmProfile.destroy({ where: { userId: farmer._id } });
+      await FarmProfile.create({
+        userId: farmer._id,
+        landSize: 4.5,
+        soilType: "Loamy Soil",
+        waterSource: "Well",
+        village: "Khed",
+        district: "Nashik",
+        state: "Maharashtra",
+        activeCropId: tomato ? tomato._id : null
+      });
+      console.log("Farm profile seeded for demo farmer! ✅");
+    }
 
     console.log("Extra Seed Data Inserted! ✅");
     process.exit();

@@ -67,6 +67,7 @@ jobs:
         DB_NAME: cropadvisor
       run: |
         cd crop-advisory-system/crop-advisory-backend/crop-advisory/server
+        node utils/seedCrops.js
         node seedUsers.js
         node seedExtra.js
 
