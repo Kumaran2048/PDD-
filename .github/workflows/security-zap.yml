@@ -1,0 +1,122 @@
+name: OWASP ZAP Vulnerability Scan
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  zap-scan:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: sachshiv
+          MYSQL_DATABASE: cropadvisor
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+        cache: 'npm'
+        cache-dependency-path: crop-advisory-system/crop-advisory-backend/crop-advisory/server/package-lock.json
+
+    - name: Install Backend Dependencies
+      run: |
+        cd crop-advisory-system/crop-advisory-backend/crop-advisory/server
+        npm install
+
+    - name: Create Backend .env File
+      run: |
+        cat <<EOF > crop-advisory-system/crop-advisory-backend/crop-advisory/server/.env
+        PORT=5000
+        DB_HOST=127.0.0.1
+        DB_PORT=3306
+        DB_USER=root
+        DB_PASSWORD=sachshiv
+        DB_NAME=cropadvisor
+        JWT_SECRET=cropAdvisorySecretKey2024
+        JWT_EXPIRE=7d
+        OPENWEATHER_API_KEY=dummy_openweather_key
+        FLASK_URL=http://localhost:8000
+        AGMARKNET_API_KEY=dummy_agmarknet_key
+        EOF
+
+    - name: Seed Database
+      env:
+        DB_HOST: 127.0.0.1
+        DB_PORT: 3306
+        DB_USER: root
+        DB_PASSWORD: sachshiv
+        DB_NAME: cropadvisor
+      run: |
+        cd crop-advisory-system/crop-advisory-backend/crop-advisory/server
+        node utils/seedCrops.js
+        node seedUsers.js
+        node seedExtra.js
+
+    - name: Start Backend Server
+      run: |
+        cd crop-advisory-system/crop-advisory-backend/crop-advisory/server
+        nohup node index.js > ../../../backend.log 2>&1 &
+
+    - name: Wait for API to be Ready
+      run: |
+        python -c "
+        import socket, time
+        port = 5000
+        start_time = time.time()
+        while True:
+            try:
+                s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                s.settimeout(1)
+                s.connect(('127.0.0.1', port))
+                s.close()
+                print(f'API Port {port} is open and ready.')
+                break
+            except Exception:
+                if time.time() - start_time > 60:
+                    raise TimeoutError(f'Timed out waiting for port {port}')
+                print(f'Waiting for port {port}...')
+                time.sleep(2)
+        "
+
+    - name: Pull OWASP ZAP Docker Image
+      run: |
+        docker pull zaproxy/zap-stable:latest
+
+    - name: Run OWASP ZAP Baseline Scan
+      run: |
+        mkdir -p zap-reports
+        # Run ZAP scan using host network to access localhost on runner
+        docker run --user root --network="host" -v $(pwd)/zap-reports:/zap/wrk/:rw -t zaproxy/zap-stable:latest zap-baseline.py -t http://localhost:5000/ -r zap_report.html || true
+        # Make sure report was created
+        ls -la zap-reports
+
+    - name: Upload ZAP Scan Report
+      uses: actions/upload-artifact@v4
+      with:
+        name: owasp-zap-report
+        path: zap-reports/zap_report.html
+
+    - name: Dump Backend Server Logs (On Failure)
+      if: always()
+      run: |
+        echo "========================================================="
+        echo "                DETAILED BACKEND LOGS                    "
+        echo "========================================================="
+        if [ -f backend.log ]; then
+          cat backend.log
+        else
+          echo "backend.log not found"
+        fi
